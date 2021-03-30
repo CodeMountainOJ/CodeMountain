@@ -4,8 +4,6 @@ project(codemountain_sandbox)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++20")
 
-include_directories("${PROJECT_SOURCE_DIR}/vendor/argparse/include")
-
 file(GLOB source_files "${PROJECT_SOURCE_DIR}/*.cpp")
 
 add_executable(codemountain_sandbox ${source_files})
