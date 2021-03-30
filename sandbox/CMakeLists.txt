@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(codemountain_sandbox C)
+project(codemountain_sandbox)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++20")
 
-include_directories("${PROJECT_SOURCE_DIR}/vendor/include")
+include_directories("${PROJECT_SOURCE_DIR}/vendor/argparse/include")
 
-file(GLOB source_files "${PROJECT_SOURCE_DIR}/*.c")
+file(GLOB source_files "${PROJECT_SOURCE_DIR}/*.cpp")
 
 add_executable(codemountain_sandbox ${source_files})

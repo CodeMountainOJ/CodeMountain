@@ -22,6 +22,9 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+'''
+end of stolen code
+'''
 
 def CMake():
     print(bcolors.WARNING+"[STATUS] Spawning CMake process..."+bcolors.ENDC)
