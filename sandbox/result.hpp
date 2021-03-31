@@ -8,4 +8,6 @@ struct result
     bool timeLimitExceeded = false;
     bool memoryLimitExceeded = false;
     bool systemError = false;
+    int  spentTime;
+    int  usedMemory;
 };

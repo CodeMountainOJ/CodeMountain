@@ -1,45 +1,48 @@
-#include "compile.hpp"
-#include <unistd.h>
-#include <vector>
-#include <iostream>
-#include "log.hpp"
+#include "runtime.hpp"
 #include "utils.hpp"
+#include "log.hpp"
+#include <unistd.h>
+#include "seccomp_rules.hpp"
 
-void compile(config *sandbox_config, result *result_struct)
+void runtime(config* sandbox_config, result* result_struct)
 {
-    Logger::Log logger("./logs/COMPILER-LOG.log");
-    std::string compile_command = sandbox_config->compile_command;
-    std::vector<char *> arg_v;
+    Logger::Log logger("./logs/RUNTIME-LOG.log");
+    std::vector<std::string> splitted_command = space_split(sandbox_config->run_command);
+    std::vector<char*> arg_v;
 
-    for (auto s : space_split(compile_command))
+    for(auto s: splitted_command)
     {
-        char *writable = new char[s.size() + 1];
+        char* writable = new char[s.size() + 1];
         std::copy(s.begin(), s.end(), writable);
-        arg_v.push_back(const_cast<char *>(writable));
+        arg_v.push_back(writable);
     }
-
     arg_v.push_back(NULL);
 
     char **argv = arg_v.data();
-    FILE *compiler_output = fopen(sandbox_config->compiler_output_file.c_str(), "w");
-    if(compiler_output == NULL)
+    FILE *runtime_output = fopen(sandbox_config->output_file.c_str(), "w");
+    if(runtime_output == NULL)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
         result_struct->systemError = true;
         exit(1);
     }
-    if(dup2(fileno(compiler_output), fileno(stdout)) == -1)
+
+    if(dup2(fileno(runtime_output), fileno(stdout)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
         exit(1);
     }
-    if(dup2(fileno(compiler_output), fileno(stderr)) == -1)
+
+    if(dup2(fileno(runtime_output), fileno(stderr)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
         exit(1);
     }
+    
+    set_rules(); // seccomp
+
     execv(argv[0], &argv[0]);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
     result_struct->systemError = true;

@@ -12,6 +12,8 @@
 #define FILE_OPEN_FAILURE       "Failed to open specified file"
 #define INVALID_NUMBER          "Expected number but got invalid value"
 #define DUP2_FAILED             "Failed to redirect stdout/stdin/stderr to specified file"
+#define WAIT_FAILED             "Failed to wait for child process"
+#define SETRLIMIT_FAILED        "Failed to set resource limit"
 
 namespace Logger {
     enum LOG_LEVEL
