@@ -11,6 +11,7 @@
 #define FILE_ERROR              "Failed to do operations on file"
 #define FILE_OPEN_FAILURE       "Failed to open specified file"
 #define INVALID_NUMBER          "Expected number but got invalid value"
+#define DUP2_FAILED             "Failed to redirect stdout/stdin/stderr to specified file"
 
 namespace Logger {
     enum LOG_LEVEL

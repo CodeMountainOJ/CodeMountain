@@ -1,5 +1,6 @@
 #pragma once
 #include<string>
+#include "result.hpp"
 
 struct config {
     std::string input_file;
@@ -7,8 +8,9 @@ struct config {
     std::string source_file;
     std::string compile_command;
     std::string run_command;
+    std::string compiler_output_file;
     int memory_limit;
     int time_limit;
 };
 
-void run(config);
+void run(config*, result*);
