@@ -7,7 +7,9 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <sys/resource.h>
-#include <time.h>
+#include <sys/time.h>
+#include <iostream>
+#include <chrono>
 
 void run(config *sandbox_config, result *result_struct)
 {
@@ -68,7 +70,8 @@ void run(config *sandbox_config, result *result_struct)
             // wait for runtime process to die
             int status;
             struct rusage runtime_rusage;
-            const clock_t begin_time = clock();
+            struct timeval start, end;
+            gettimeofday(&start, NULL);
             killer k = killer(sandbox_config, result_struct, runtime_pid);
 
             if (wait4(runtime_pid, &status, WSTOPPED, &runtime_rusage) == -1)
@@ -88,7 +91,8 @@ void run(config *sandbox_config, result *result_struct)
             }
 
             result_struct->usedMemory = runtime_rusage.ru_maxrss / 1024;
-            result_struct->spentTime = (clock() - begin_time) / 1000;
+            gettimeofday(&end, NULL);
+            result_struct->spentTime = (int) (end.tv_sec * 1000 + end.tv_usec / 1000 - start.tv_sec * 1000 - start.tv_usec / 1000) / 1000;
 
             if (result_struct->timeLimitExceeded)
             {
