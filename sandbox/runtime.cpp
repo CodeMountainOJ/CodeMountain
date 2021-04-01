@@ -3,6 +3,7 @@
 #include "log.hpp"
 #include <unistd.h>
 #include "seccomp_rules.hpp"
+#include <sys/resource.h>
 
 void runtime(config* sandbox_config, result* result_struct)
 {
@@ -41,6 +42,17 @@ void runtime(config* sandbox_config, result* result_struct)
         exit(1);
     }
     
+    // setrlimit
+    struct rlimit max_mem;
+    max_mem.rlim_cur = max_mem.rlim_max = sandbox_config->memory_limit * 1024 * 1024 * 2;
+    if(setrlimit(RLIMIT_AS, &max_mem) != 0)
+    {
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(RLIMIT_MEM_FAILED));
+        result_struct->systemError = true;
+        exit(1);
+    }
+
+
     set_rules(); // seccomp
 
     execv(argv[0], &argv[0]);
