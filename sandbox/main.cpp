@@ -27,6 +27,9 @@ int main(int argc, char** argv) {
     sandbox_argparse.add_argument("-r")
                     .help("Command to use to run the program")
                     .required();
+    sandbox_argparse.add_argument("-e")
+                    .help("Binary program to apply rules to")
+                    .required();
     sandbox_argparse.add_argument("-t")
                     .help("Time limit(in seconds)")
                     .action([&](const std::string &value)
@@ -82,6 +85,7 @@ int main(int argc, char** argv) {
         sandbox_config.time_limit = sandbox_argparse.get<int>("-t");
         sandbox_config.memory_limit = sandbox_argparse.get<int>("-m");
         sandbox_config.compiler_output_file = sandbox_argparse.get("-g");
+        sandbox_config.binary = sandbox_argparse.get("-e");
         run(&sandbox_config, &sandbox_result);
         printf("{\n"
                "\t\"compileError\": %d,\n"

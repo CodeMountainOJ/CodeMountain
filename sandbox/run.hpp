@@ -9,6 +9,7 @@ struct config {
     std::string compile_command;
     std::string run_command;
     std::string compiler_output_file;
+    std::string binary;
     int         memory_limit;
     int         time_limit;
 };

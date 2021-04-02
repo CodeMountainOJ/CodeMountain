@@ -20,7 +20,16 @@ void runtime(config* sandbox_config, result* result_struct)
     arg_v.push_back(NULL);
 
     char **argv = arg_v.data();
+    FILE *runtime_input = fopen(sandbox_config->input_file.c_str(), "r");
     FILE *runtime_output = fopen(sandbox_config->output_file.c_str(), "w");
+
+    if(runtime_input == NULL)
+    {
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
+        result_struct->systemError = true;
+        exit(1);
+    }
+
     if(runtime_output == NULL)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
@@ -41,6 +50,13 @@ void runtime(config* sandbox_config, result* result_struct)
         result_struct->systemError = true;
         exit(1);
     }
+
+    if(dup2(fileno(runtime_input), fileno(stdin)) == -1)
+    {
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
+        result_struct->systemError = true;
+        exit(1);
+    }
     
     // setrlimit
     struct rlimit max_mem;
@@ -53,7 +69,11 @@ void runtime(config* sandbox_config, result* result_struct)
     }
 
 
-    set_rules(); // seccomp
+    set_rules(sandbox_config, result_struct); // seccomp
+    if(result_struct->systemError) // failed to set seccomp rule
+    {
+        exit(1);
+    }
 
     execv(argv[0], &argv[0]);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));

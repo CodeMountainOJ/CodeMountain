@@ -81,7 +81,7 @@ void run(config *sandbox_config, result *result_struct)
                 result_struct->systemError = true;
                 return;
             }
-
+            
             // cancel(will do nothing if already done)
             k.cancel();
 
@@ -106,9 +106,7 @@ void run(config *sandbox_config, result *result_struct)
 
             if (WEXITSTATUS(status) != 0)
             {
-                if (WEXITSTATUS(status) == SIGUSR1)
-                    result_struct->runtimeErrors = true;
-                else if (WEXITSTATUS(status) == ENOMEM)
+                if (WEXITSTATUS(status) == ENOMEM)
                 {
                     result_struct->memoryLimitExceeded = true;
                 }
