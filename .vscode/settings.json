@@ -65,7 +65,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "stdio.h": "c"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/sandbox",
     "VSCodeCounter.exclude": [

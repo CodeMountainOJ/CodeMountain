@@ -19,8 +19,7 @@ int main(int argc, char** argv) {
     sandbox_argparse.add_argument("-c")
                     .help("Command to compile(Do not specify if code doesn't needs to get compiled)");
     sandbox_argparse.add_argument("-g")
-                    .help("File to save compiler output")
-                    .required();
+                    .help("File to save compiler output");
     sandbox_argparse.add_argument("-o")
                     .help("The file where output will be saved")
                     .required();
@@ -76,15 +75,24 @@ int main(int argc, char** argv) {
         }
         config sandbox_config;
         result sandbox_result;
+        sandbox_config.current_binary = argv[0];
         sandbox_config.source_file = sandbox_argparse.get("-s");
         sandbox_config.input_file = sandbox_argparse.get("-i");
         if(sandbox_argparse.present("-c").has_value())
+        {
+            if(!sandbox_argparse.present("-g").has_value())
+            {
+                std::cout<<"Expected -g because -c is provided"<<std::endl;
+                std::cout<<sandbox_argparse;
+                exit(0);
+            }
+            sandbox_config.compiler_output_file = sandbox_argparse.get("-g");
             sandbox_config.compile_command = sandbox_argparse.get<std::string>("-c");
+        }
         sandbox_config.output_file = sandbox_argparse.get("-o");
         sandbox_config.run_command = sandbox_argparse.get("-r");
         sandbox_config.time_limit = sandbox_argparse.get<int>("-t");
         sandbox_config.memory_limit = sandbox_argparse.get<int>("-m");
-        sandbox_config.compiler_output_file = sandbox_argparse.get("-g");
         sandbox_config.binary = sandbox_argparse.get("-e");
         run(&sandbox_config, &sandbox_result);
         printf("{\n"
@@ -109,6 +117,6 @@ int main(int argc, char** argv) {
     {
         std::cout<<e.what()<<std::endl;
         std::cout<<sandbox_argparse;
-        exit(1);
+        exit(0);
     }
 }

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "seccomp_rules.hpp"
 #include <sys/resource.h>
+#include <iostream>
 
 void runtime(config* sandbox_config, result* result_struct)
 {
@@ -75,7 +76,7 @@ void runtime(config* sandbox_config, result* result_struct)
         exit(1);
     }
 
-    execv(argv[0], &argv[0]);
+    execve(argv[0], &argv[0], environ);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
     result_struct->systemError = true;
     exit(1);

@@ -54,81 +54,82 @@ void run(config *sandbox_config, result *result_struct)
                 return;
             }
         }
-        pid_t runtime_pid;
-        if ((runtime_pid = fork()) < 0)
+    }
+
+    pid_t runtime_pid;
+    if ((runtime_pid = fork()) < 0)
+    {
+        result_struct->systemError = true;
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(CHILD_FORK_FAILED));
+        return;
+    }
+    else if (runtime_pid == 0)
+    {
+        runtime(sandbox_config, result_struct);
+    }
+    else if (runtime_pid > 0)
+    {
+        // wait for runtime process to die
+        int status;
+        struct rusage runtime_rusage;
+        struct timeval start, end;
+        gettimeofday(&start, NULL);
+        killer k = killer(sandbox_config, result_struct, runtime_pid);
+
+        if (wait4(runtime_pid, &status, WSTOPPED, &runtime_rusage) == -1)
         {
+            kill(runtime_pid, SIGKILL);
+            logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(WAIT_FAILED));
             result_struct->systemError = true;
-            logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(CHILD_FORK_FAILED));
             return;
         }
-        else if (runtime_pid == 0)
+
+        // cancel(will do nothing if already done)
+        k.cancel();
+
+        if (result_struct->systemError)
         {
-            runtime(sandbox_config, result_struct);
+            return; // no need to continue
         }
-        else if (runtime_pid > 0)
+
+        result_struct->usedMemory = runtime_rusage.ru_maxrss / 1024;
+        gettimeofday(&end, NULL);
+        result_struct->spentTime = (int)(end.tv_sec * 1000 + end.tv_usec / 1000 - start.tv_sec * 1000 - start.tv_usec / 1000) / 1000;
+
+        if (result_struct->timeLimitExceeded)
         {
-            // wait for runtime process to die
-            int status;
-            struct rusage runtime_rusage;
-            struct timeval start, end;
-            gettimeofday(&start, NULL);
-            killer k = killer(sandbox_config, result_struct, runtime_pid);
+            return;
+        }
 
-            if (wait4(runtime_pid, &status, WSTOPPED, &runtime_rusage) == -1)
-            {
-                kill(compile_pid, SIGKILL);
-                logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(WAIT_FAILED));
-                result_struct->systemError = true;
-                return;
-            }
-            
-            // cancel(will do nothing if already done)
-            k.cancel();
+        if (result_struct->usedMemory > sandbox_config->memory_limit)
+        {
+            result_struct->memoryLimitExceeded = true;
+        }
 
-            if (result_struct->systemError)
-            {
-                return; // no need to continue
-            }
-
-            result_struct->usedMemory = runtime_rusage.ru_maxrss / 1024;
-            gettimeofday(&end, NULL);
-            result_struct->spentTime = (int) (end.tv_sec * 1000 + end.tv_usec / 1000 - start.tv_sec * 1000 - start.tv_usec / 1000) / 1000;
-
-            if (result_struct->timeLimitExceeded)
-            {
-                return;
-            }
-
-            if(result_struct->usedMemory > sandbox_config->memory_limit)
+        if (WEXITSTATUS(status) != 0)
+        {
+            if (WEXITSTATUS(status) == ENOMEM)
             {
                 result_struct->memoryLimitExceeded = true;
             }
-
-            if (WEXITSTATUS(status) != 0)
+            else if (WEXITSTATUS(status) == SIGSEGV)
             {
-                if (WEXITSTATUS(status) == ENOMEM)
+                if (result_struct->usedMemory > sandbox_config->memory_limit)
                 {
                     result_struct->memoryLimitExceeded = true;
                 }
-                else if (WEXITSTATUS(status) == SIGSEGV)
-                {
-                    if (result_struct->usedMemory > sandbox_config->memory_limit)
-                    {
-                        result_struct->memoryLimitExceeded = true;
-                    }
-                    else
-                    {
-                        result_struct->runtimeErrors = true;
-                    }
-                }
                 else
+                {
                     result_struct->runtimeErrors = true;
+                }
             }
+            else
+                result_struct->runtimeErrors = true;
+        }
 
-            if (result_struct->spentTime > sandbox_config->time_limit)
-            {
-                result_struct->timeLimitExceeded = true;
-            }
+        if (result_struct->spentTime > sandbox_config->time_limit)
+        {
+            result_struct->timeLimitExceeded = true;
         }
     }
 }

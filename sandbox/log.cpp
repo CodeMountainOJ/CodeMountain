@@ -44,7 +44,7 @@ void Logger::Log::write_log(LOG_LEVEL log_level, const std::string &message)
     time_string += std::to_string(ltm->tm_sec) + " ";
     time_string += ltm->tm_hour >= 12 ? "PM" : "AM";
 
-    final_message += log_level_indicators.at(log_level - 1);
+    final_message += log_level_indicators.at(log_level);
     final_message += message + " - ";
     final_message += time_string;
 
