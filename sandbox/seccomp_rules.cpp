@@ -17,17 +17,17 @@ void set_rules(config *sandbox_config, result *result_struct)
         return;
     }
 
-    // std::string binary_path = sandbox_config->binary;
-    // char* path = new char[binary_path.size() + 1];
-    // std::copy(binary_path.begin(), binary_path.end(), path);
+    #ifdef DEBUGMODE
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string(sandbox_config->binary)+" - Binary file");
+    #endif
 
-    // // execve
-    // if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_NE, (scmp_datum_t)(path))) == -1)
-    // {
-    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-    //     result_struct->systemError = true;
-    //     return;
-    // }
+    // execve
+    if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_NE, (scmp_datum_t)(sandbox_config->binary))) == -1)
+    {
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
+        result_struct->systemError = true;
+        return;
+    }
 
     // execveat
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execveat), 0) != 0)
@@ -38,7 +38,7 @@ void set_rules(config *sandbox_config, result *result_struct)
     }
 
     // socket
-    if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(socket), 1, SCMP_A0(SCMP_CMP_NE, (scmp_datum_t)(sandbox_config->binary.c_str()))) != 0)
+    if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(socket), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
         result_struct->systemError = true;
