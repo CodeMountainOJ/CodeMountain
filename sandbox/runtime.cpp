@@ -8,21 +8,37 @@
 
 void runtime(config* sandbox_config, result* result_struct)
 {
+    FILE *runtime_input = fopen(sandbox_config->input_file.c_str(), "r");
+    FILE *runtime_output = fopen(sandbox_config->output_file.c_str(), "w");
     Logger::Log logger("./logs/RUNTIME-LOG.log");
-    std::vector<std::string> splitted_command = space_split(sandbox_config->run_command);
+#ifdef DEBUGMODE
+    logger.write_log(Logger::LOG_LEVEL::DEBUG, sandbox_config->runtime_argv + " - These arguments will provided to the program");
+    logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string(sandbox_config->binary) + " - Binary program");
+#endif
+
+    std::vector<std::string> splitted_command;
+    splitted_command.push_back(sandbox_config->binary);
+    for(auto arg: space_split(sandbox_config->runtime_argv))
+    {
+#ifdef DEBUGMODE
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, arg + " - arg");
+#endif
+        splitted_command.push_back(arg);
+    }
+
     std::vector<char*> arg_v;
 
     for(auto s: splitted_command)
     {
         char* writable = new char[s.size() + 1];
         std::copy(s.begin(), s.end(), writable);
+#ifdef DEBUGMODE
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, s + " - writable format of argument");
+#endif
         arg_v.push_back(writable);
     }
     arg_v.push_back(NULL);
-
     char **argv = arg_v.data();
-    FILE *runtime_input = fopen(sandbox_config->input_file.c_str(), "r");
-    FILE *runtime_output = fopen(sandbox_config->output_file.c_str(), "w");
 
     if(runtime_input == NULL)
     {
@@ -76,7 +92,7 @@ void runtime(config* sandbox_config, result* result_struct)
         exit(1);
     }
 
-    execve(argv[0], &argv[0], environ);
+    execve(sandbox_config->binary, &argv[0], environ);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
     result_struct->systemError = true;
     exit(1);
