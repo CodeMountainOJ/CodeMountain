@@ -24,10 +24,10 @@ int main(int argc, char** argv) {
                     .help("The file where output will be saved")
                     .required();
     sandbox_argparse.add_argument("-r")
-                    .help("Command to use to run the program")
+                    .help("Arguments to use when running the program")
                     .required();
     sandbox_argparse.add_argument("-e")
-                    .help("Binary program to apply rules to")
+                    .help("Binary program to run")
                     .required();
     sandbox_argparse.add_argument("-t")
                     .help("Time limit(in seconds)")
@@ -75,9 +75,8 @@ int main(int argc, char** argv) {
         }
         config sandbox_config;
         result sandbox_result;
-        sandbox_config.current_binary = argv[0];
-        sandbox_config.source_file = sandbox_argparse.get("-s");
-        sandbox_config.input_file = sandbox_argparse.get("-i");
+        sandbox_config.source_file = sandbox_argparse.get<std::string>("-s");
+        sandbox_config.input_file = sandbox_argparse.get<std::string>("-i");
         if(sandbox_argparse.present("-c").has_value())
         {
             if(!sandbox_argparse.present("-g").has_value())
@@ -86,14 +85,27 @@ int main(int argc, char** argv) {
                 std::cout<<sandbox_argparse;
                 exit(0);
             }
-            sandbox_config.compiler_output_file = sandbox_argparse.get("-g");
+            sandbox_config.compiler_output_file = sandbox_argparse.get<std::string>("-g");
             sandbox_config.compile_command = sandbox_argparse.get<std::string>("-c");
+#ifdef DEBUGMODE
+            logger.write_log(Logger::LOG_LEVEL::DEBUG, sandbox_config.compiler_output_file + " - Compiler output file" );
+            logger.write_log(Logger::LOG_LEVEL::DEBUG, sandbox_config.compile_command + " - Compiler command" );
+#endif
         }
-        sandbox_config.output_file = sandbox_argparse.get("-o");
-        sandbox_config.run_command = sandbox_argparse.get("-r");
+        sandbox_config.output_file = sandbox_argparse.get<std::string>("-o");
+        sandbox_config.runtime_argv = sandbox_argparse.get<std::string>("-r");
         sandbox_config.time_limit = sandbox_argparse.get<int>("-t");
         sandbox_config.memory_limit = sandbox_argparse.get<int>("-m");
-        sandbox_config.binary = sandbox_argparse.get("-e");
+        sandbox_config.runtime_argv = sandbox_argparse.get<std::string>("-r");
+
+        std::string binary = sandbox_argparse.get<std::string>("-e");
+        char* writable = new char[binary.size() + 1];
+        std::copy(binary.begin(), binary.end(), writable);
+        sandbox_config.binary = writable;
+#ifdef DEBUGMODE
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string(writable) + " - Binary file");
+#endif
+
         run(&sandbox_config, &sandbox_result);
         printf("{\n"
                "\t\"compileError\": %d,\n"
