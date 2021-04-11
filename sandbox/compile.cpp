@@ -16,6 +16,9 @@ void compile(config *sandbox_config, result *result_struct)
         char *writable = new char[s.size() + 1];
         std::copy(s.begin(), s.end(), writable);
         arg_v.push_back(const_cast<char *>(writable));
+#ifdef DEBUGMODE
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("writable argument - ") + writable);
+#endif
     }
 
     arg_v.push_back(NULL);
@@ -40,7 +43,7 @@ void compile(config *sandbox_config, result *result_struct)
         result_struct->systemError = true;
         exit(1);
     }
-    execv(argv[0], &argv[0]);
+    execve(argv[0], &argv[0], __environ);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
     result_struct->systemError = true;
     exit(1);
