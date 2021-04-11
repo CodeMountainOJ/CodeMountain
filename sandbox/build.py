@@ -3,8 +3,10 @@ import subprocess
 import shlex
 import os
 from shutil import rmtree
+from sys import argv
 
 cmake_BUILD_COMMAND = 'cmake ../'
+cmake_BUILD_COMMAND_DEBUG = 'cmake ../ -DDEBUG=true'
 MAKE_BUILD_COMMAND  = 'make'
 RUN_COMMAND         = './codemountain_sandbox'
 
@@ -26,11 +28,20 @@ class bcolors:
 end of stolen code
 '''
 
+def hasValue(l: list, s: str) -> bool:
+    for i in l:
+        if i == s:
+            return True
+    return False
+
 def CMake():
     print(bcolors.WARNING+"[STATUS] Spawning CMake process..."+bcolors.ENDC)
 
     stdin, stdout, stderr = '', '', ''
-    CMakeProcess = subprocess.Popen(shlex.split(cmake_BUILD_COMMAND), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if hasValue(argv, "--debug"):
+        CMakeProcess = subprocess.Popen(shlex.split(cmake_BUILD_COMMAND_DEBUG), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        CMakeProcess = subprocess.Popen(shlex.split(cmake_BUILD_COMMAND), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     CMakeProcess.wait()
     if(CMakeProcess.returncode != 0):
         print(bcolors.FAIL+'[FAIL] CMake build process failed!'+bcolors.ENDC)
