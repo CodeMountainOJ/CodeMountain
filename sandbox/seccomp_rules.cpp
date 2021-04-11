@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "log.hpp"
+#include "config.hpp"
 
 void set_rules(config *sandbox_config, result *result_struct)
 {
