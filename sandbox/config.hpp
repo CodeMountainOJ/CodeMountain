@@ -11,4 +11,6 @@ struct config {
     char*       binary;
     int         memory_limit;
     int         time_limit;
+    int         child_uid;
+    int         child_gid;
 };

@@ -41,10 +41,13 @@ void run(config *sandbox_config, result *result_struct)
                 result_struct->systemError = true;
                 return;
             }
-            if (result_struct->systemError) // no need to continue
+
+            if (WTERMSIG(status) == SIGUSR1) // no need to continue
             {
+                result_struct->systemError = true;
                 return;
             }
+
             if (status != 0)
             {
                 result_struct->compileErrors = true;
@@ -87,9 +90,14 @@ void run(config *sandbox_config, result *result_struct)
         // cancel(will do nothing if already done)
         k.cancel();
 
-        if (result_struct->systemError)
+#ifdef DEBUGMODE
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Sandboxed process's return code - ") + std::to_string(WEXITSTATUS(status)));
+#endif
+
+        if (WTERMSIG(status) == SIGUSR1) // no need to continue
         {
-            return; // no need to continue
+            result_struct->systemError = true;
+            return;
         }
 
         result_struct->usedMemory = runtime_rusage.ru_maxrss / 1024;

@@ -14,6 +14,7 @@
 #define DUP2_FAILED             "Failed to redirect stdout/stdin/stderr to specified file"
 #define WAIT_FAILED             "Failed to wait for child process"
 #define SETRLIMIT_FAILED        "Failed to set resource limit"
+#define NOT_ROOT                "This program must be started as root"
 
 namespace Logger {
     enum LOG_LEVEL

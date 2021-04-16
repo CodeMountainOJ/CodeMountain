@@ -5,6 +5,8 @@
 #include "seccomp_rules.hpp"
 #include <sys/resource.h>
 #include <iostream>
+#include <errno.h>
+#include "signal.hpp"
 
 void runtime(config* sandbox_config, result* result_struct)
 {
@@ -44,35 +46,35 @@ void runtime(config* sandbox_config, result* result_struct)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
 
     if(runtime_output == NULL)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
 
     if(dup2(fileno(runtime_output), fileno(stdout)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
 
     if(dup2(fileno(runtime_output), fileno(stderr)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
 
     if(dup2(fileno(runtime_input), fileno(stdin)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
     
     // setrlimit
@@ -82,18 +84,44 @@ void runtime(config* sandbox_config, result* result_struct)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(RLIMIT_MEM_FAILED));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
 
 
     set_rules(sandbox_config, result_struct); // seccomp
     if(result_struct->systemError) // failed to set seccomp rule
     {
-        exit(1);
+        systemError();
     }
+
+    if(setuid(sandbox_config->child_uid) != 0)
+    {
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SETUID_FAILED));
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Errno: ") + std::to_string(errno));
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current euid: ") + std::to_string(geteuid()));
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current uid: ") + std::to_string(getuid()));
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current egid: ") + std::to_string(getegid()));
+        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current gid: ") + std::to_string(getgid()));
+        result_struct->systemError = true;
+        perror("setgid");
+        systemError();
+    }
+
+    // if(setgid(sandbox_config->child_gid) != 0)
+    // {
+    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SETGID_FAILED));
+    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Errno: ") + std::to_string(errno));
+    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current euid: ") + std::to_string(geteuid()));
+    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current uid: ") + std::to_string(getuid()));
+    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current egid: ") + std::to_string(getegid()));
+    //     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current gid: ") + std::to_string(getgid()));
+    //     result_struct->systemError = true;
+    //     perror("setgid");
+    //     systemError();
+    // }
 
     execve(sandbox_config->binary, &argv[0], environ);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
     result_struct->systemError = true;
-    exit(1);
+    systemError();
 }

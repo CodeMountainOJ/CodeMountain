@@ -4,6 +4,7 @@
 #include <iostream>
 #include "log.hpp"
 #include "utils.hpp"
+#include "signal.hpp"
 
 void compile(config *sandbox_config, result *result_struct)
 {
@@ -29,22 +30,22 @@ void compile(config *sandbox_config, result *result_struct)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
     if(dup2(fileno(compiler_output), fileno(stdout)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
     if(dup2(fileno(compiler_output), fileno(stderr)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
         result_struct->systemError = true;
-        exit(1);
+        systemError();
     }
     execve(argv[0], &argv[0], __environ);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
     result_struct->systemError = true;
-    exit(1);
+    systemError();
 }
