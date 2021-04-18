@@ -1,4 +1,4 @@
-#! /bin/python
+#! /bin/env python
 import subprocess
 import shlex
 import os
