@@ -37,6 +37,7 @@ void runtime(config* sandbox_config, result* result_struct)
 #ifdef DEBUGMODE
         logger.write_log(Logger::LOG_LEVEL::DEBUG, s + " - writable format of argument");
 #endif
+        writable[s.size()] = '\0';
         arg_v.push_back(writable);
     }
     arg_v.push_back(NULL);

@@ -16,6 +16,7 @@ void compile(config *sandbox_config, result *result_struct)
     {
         char *writable = new char[s.size() + 1];
         std::copy(s.begin(), s.end(), writable);
+        writable[s.size()] = '\0';
         arg_v.push_back(const_cast<char *>(writable));
 #ifdef DEBUGMODE
         logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("writable argument - ") + writable);
