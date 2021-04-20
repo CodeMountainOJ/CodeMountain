@@ -36,6 +36,6 @@ mod tests {
         assert_eq!(_config.gid, 0);
         assert_eq!(_config.time_limit, 0);
         assert_eq!(_config.memory_limit, 0);
-        assert_eq!(_config.uninitialized, true);
+        assert_eq!(_config.initialized, false);
     }
 }
