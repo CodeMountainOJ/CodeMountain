@@ -53,3 +53,4 @@ dkms.conf
 
 build/
 logs/*.log
+.vscode/templates
