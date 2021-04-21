@@ -85,7 +85,7 @@ def mkdir():
     if(not os.path.exists('build')):
         os.mkdir('build')
     else:
-        rmtree('build')
+        os.system('sudo rm -rf build')
         os.mkdir('build')
 
 def cdtobuild():
