@@ -20,16 +20,17 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <sys/stat.h>
+#include <filesystem>
 
 Logger::Log::Log(std::string log_file_name)
-    : m_Log_File(std::fstream(log_file_name, std::ios::out))
 {
-    if(!this->m_Log_File)
-    {
-        std::cout<<"[FATAL] Failed to open or create log file!"<<std::endl;
-        exit(2);
+    if(std::filesystem::exists(log_file_name)) {
+        m_Log_File = std::fstream(log_file_name, std::ios::app);
+    } else {
+        mkdir("logs", S_IRWXU | S_IRWXG);
+        m_Log_File = std::fstream(log_file_name, std::ios::out);
     }
-
 }
 
 void Logger::Log::write_log(LOG_LEVEL log_level, const std::string &message)
