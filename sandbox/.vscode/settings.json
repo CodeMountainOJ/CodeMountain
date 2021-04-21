@@ -69,7 +69,9 @@
         "stdio.h": "c",
         "strstream": "cpp",
         "error.h": "c",
-        "csignal": "cpp"
+        "csignal": "cpp",
+        "codecvt": "cpp",
+        "iomanip": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/sandbox",
     "VSCodeCounter.exclude": [
