@@ -80,4 +80,30 @@ mod tests {
 
         assert_eq!(config.get_cmd(), String::from("../../build/codemountain_sandbox -s ../../testprograms/rm.c -i ../../build/input.txt -o ../../build/output.txt -c \"/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram\" -g \"../../build/compiler_output_file.txt\" -e \"program\" -r \"--arg1 --arg2\" -t 1 -m 128 -u 1001 -d 1001"));
     }
+
+    #[test]
+    fn setting_values_but_no_compilation() {
+        let mut config = sandboxconfig::SandboxConfig::new();
+        let args = vec![String::from("../../testprograms/program.py")];
+        config.set_sandbox_executable(&String::from("../../build/codemountain_sandbox"));
+        config.set_source_file(&String::from("../../testprograms/program.py"));
+        config.set_input_file(&String::from("../../build/input.txt"));
+        config.set_output_file(&String::from("../../build/output.txt"));
+        config.set_executable_args(&args);
+        config.set_executable(&String::from("/usr/bin/python"));
+        config.set_uid(1001);
+        config.set_gid(1001);
+        config.set_time_limit(1);
+        config.set_memory_limit(128);
+        config.gen_cmd();
+
+        assert_eq!(config.get_cmd(), String::from("../../build/codemountain_sandbox -s ../../testprograms/program.py -i ../../build/input.txt -o ../../build/output.txt -e \"/usr/bin/python\" -r \"../../testprograms/program.py\" -t 1 -m 128 -u 1001 -d 1001"));
+    }
+
+    #[test]
+    fn uninitialized_test() {
+        let mut config = sandboxconfig::SandboxConfig::new();
+        config.set_sandbox_executable(&String::from("../../build/codemountain_sandbox"));
+        assert_eq!(config.initialized, false);
+    }
 }
