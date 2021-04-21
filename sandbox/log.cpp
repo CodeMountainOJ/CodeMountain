@@ -21,15 +21,25 @@
 #include <vector>
 #include <ctime>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <filesystem>
 
 Logger::Log::Log(std::string log_file_name)
 {
     if(std::filesystem::exists(log_file_name)) {
         m_Log_File = std::fstream(log_file_name, std::ios::app);
+        if(chmod(log_file_name.c_str(), S_IRWXO) != 0) {
+            std::cout<<"[FATAL] Cannot chmod() on log files!"<<std::endl;
+            perror("chmod");
+        }
     } else {
-        mkdir("logs", S_IRWXU | S_IRWXG);
+        mkdir("logs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH | S_IWOTH);
         m_Log_File = std::fstream(log_file_name, std::ios::out);
+        if(chmod(log_file_name.c_str(), S_IRWXO) != 0) {
+            std::cout<<"[FATAL] Cannot chmod() on log files!"<<std::endl;
+            perror("chmod");
+        }
     }
 }
 
