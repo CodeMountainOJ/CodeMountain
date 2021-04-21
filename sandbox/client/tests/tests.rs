@@ -23,19 +23,61 @@ mod tests {
     use super::*;
     #[test]
     fn init_test() {
-        let _config = sandboxconfig::SandboxConfig::new();
+        let config = sandboxconfig::SandboxConfig::new();
 
-        assert_eq!(_config.source_file, String::from(""));
-        assert_eq!(_config.input_file, String::from(""));
-        assert_eq!(_config.output_file, String::from(""));
-        assert_eq!(_config.compiler_output_file, String::from(""));
-        assert_eq!(_config.compile_cmd, String::from(""));
-        assert_eq!(_config.executable, String::from(""));
-        assert_eq!(_config.executable_args.len(), 0);
-        assert_eq!(_config.uid, 0);
-        assert_eq!(_config.gid, 0);
-        assert_eq!(_config.time_limit, 0);
-        assert_eq!(_config.memory_limit, 0);
-        assert_eq!(_config.initialized, false);
+        assert_eq!(config.sandbox_executable, String::from(""));
+        assert_eq!(config.source_file, String::from(""));
+        assert_eq!(config.input_file, String::from(""));
+        assert_eq!(config.output_file, String::from(""));
+        assert_eq!(config.compiler_output_file, String::from(""));
+        assert_eq!(config.compile_cmd, String::from(""));
+        assert_eq!(config.executable, String::from(""));
+        assert_eq!(config.executable_args.len(), 0);
+        assert_eq!(config.uid, 0);
+        assert_eq!(config.gid, 0);
+        assert_eq!(config.time_limit, 0);
+        assert_eq!(config.memory_limit, 0);
+        assert_eq!(config.initialized, false);
+    }
+
+    #[test]
+    fn setting_values() {
+        let mut config = sandboxconfig::SandboxConfig::new();
+        config.set_sandbox_executable(&String::from("../../build/codemountain_sandbox"));
+        config.set_source_file(&String::from("../../testprograms/rm.c"));
+        config.set_input_file(&String::from("../../build/input.txt"));
+        config.set_output_file(&String::from("../../build/output.txt"));
+        config.set_compile_cmd(&String::from("/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram"));
+        config.set_compiler_output_file(&String::from("../../build/compiler_output_file.txt"));
+        config.set_executable_args(&Vec::new());
+        config.set_executable(&String::from("program"));
+        config.set_uid(1001);
+        config.set_gid(1001);
+        config.set_time_limit(1);
+        config.set_memory_limit(128);
+        config.gen_cmd();
+
+        assert_eq!(config.get_cmd(), String::from("../../build/codemountain_sandbox -s ../../testprograms/rm.c -i ../../build/input.txt -o ../../build/output.txt -c \"/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram\" -g \"../../build/compiler_output_file.txt\" -e \"program\" -r \"\" -t 1 -m 128 -u 1001 -d 1001"));
+    }
+
+    #[test]
+    fn setting_values_with_args_filled() { 
+        let args: Vec<String> = vec![String::from("--arg1"), String::from("--arg2")];
+        let mut config = sandboxconfig::SandboxConfig::new();
+        config.set_sandbox_executable(&String::from("../../build/codemountain_sandbox"));
+        config.set_source_file(&String::from("../../testprograms/rm.c"));
+        config.set_input_file(&String::from("../../build/input.txt"));
+        config.set_output_file(&String::from("../../build/output.txt"));
+        config.set_compile_cmd(&String::from("/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram"));
+        config.set_compiler_output_file(&String::from("../../build/compiler_output_file.txt"));
+        config.set_executable_args(&args);
+        config.set_executable(&String::from("program"));
+        config.set_uid(1001);
+        config.set_gid(1001);
+        config.set_time_limit(1);
+        config.set_memory_limit(128);
+        config.gen_cmd();
+
+        assert_eq!(config.get_cmd(), String::from("../../build/codemountain_sandbox -s ../../testprograms/rm.c -i ../../build/input.txt -o ../../build/output.txt -c \"/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram\" -g \"../../build/compiler_output_file.txt\" -e \"program\" -r \"--arg1 --arg2\" -t 1 -m 128 -u 1001 -d 1001"));
     }
 }
