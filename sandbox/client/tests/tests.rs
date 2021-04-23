@@ -43,6 +43,8 @@ mod tests {
     #[test]
     fn setting_values() {
         let mut config = sandboxclient::SandboxClient::new();
+        let generated_cmd = vec!["-s", "../testprograms/rm/rm.c", "-i", "../build/input.txt", "-o", "../build/output.txt", "-c", "/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram", "-g", "../build/compiler_output_file.txt", "-e", "program", "-r", "", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
+
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
         config.set_input_file(&String::from("../build/input.txt"));
@@ -57,13 +59,15 @@ mod tests {
         config.set_memory_limit(128);
         config.gen_cmd();
 
-        assert_eq!(config.get_cmd(), String::from("-s ../testprograms/rm/rm.c -i ../build/input.txt -o ../build/output.txt -c /usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram -g ../build/compiler_output_file.txt -e program -r  -t 1 -m 128 -u 1001 -d 1001"));
+        assert_eq!(config.get_cmd(), generated_cmd);    
     }
 
     #[test]
     fn setting_values_with_args_filled() { 
         let args: Vec<String> = vec![String::from("-a"), String::from("-b")];
         let mut config = sandboxclient::SandboxClient::new();
+        let generated_cmd = vec!["-s", "../testprograms/rm/rm.c", "-i", "../build/input.txt", "-o", "../build/output.txt", "-c", "/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram", "-g", "../build/compiler_output_file.txt", "-e", "program", "-r", "-a -b", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
+
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
         config.set_input_file(&String::from("../build/input.txt"));
@@ -78,12 +82,14 @@ mod tests {
         config.set_memory_limit(128);
         config.gen_cmd();
 
-        assert_eq!(config.get_cmd(), String::from("-s ../testprograms/rm/rm.c -i ../build/input.txt -o ../build/output.txt -c /usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram -g ../build/compiler_output_file.txt -e program -r -a -b -t 1 -m 128 -u 1001 -d 1001"));
+        assert_eq!(config.get_cmd(), generated_cmd);    
     }
 
     #[test]
     fn setting_values_but_no_compilation() {
         let mut config = sandboxclient::SandboxClient::new();
+        let generated_cmd = vec!["-s", "../testprograms/python-helloworld/program.py", "-i", "../build/input.txt", "-o", "../build/output.txt", "-e", "/usr/bin/python", "-r", "../testprograms/python-helloworld/program.py", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
+
         let args = vec![String::from("../testprograms/python-helloworld/program.py")];
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/python-helloworld/program.py"));
@@ -97,7 +103,7 @@ mod tests {
         config.set_memory_limit(128);
         config.gen_cmd();
 
-        assert_eq!(config.get_cmd(), String::from("-s ../testprograms/python-helloworld/program.py -i ../build/input.txt -o ../build/output.txt -e /usr/bin/python -r ../testprograms/python-helloworld/program.py -t 1 -m 128 -u 1001 -d 1001"));
+        assert_eq!(config.get_cmd(), generated_cmd);
     }
 
     #[test]
