@@ -193,7 +193,7 @@ impl SandboxClient {
         }
     }
 
-    pub fn get_cmd(&mut self) -> String {
-        self.command.join(" ")
+    pub fn get_cmd(&mut self) -> Vec<String> {
+        self.command.clone()
     }
 }
