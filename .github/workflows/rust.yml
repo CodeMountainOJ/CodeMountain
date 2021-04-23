@@ -1,4 +1,4 @@
-name: Rust
+name: Sandbox Tests
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  Test_Rust_Client:
+  Test:
 
     runs-on: ubuntu-latest
 
