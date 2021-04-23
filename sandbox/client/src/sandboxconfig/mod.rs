@@ -15,10 +15,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use crate::utils;
+use std::process::Command;
 
-
-#[derive(PartialEq, Default, Debug)]
+#[derive(Debug, Default)]
 pub struct SandboxConfig {
     pub sandbox_executable: String,
     pub source_file: String,
@@ -32,8 +31,10 @@ pub struct SandboxConfig {
     pub gid: u16,
     pub time_limit: u16,
     pub memory_limit: u16,
-    pub command: String,
-    pub initialized: bool
+    pub command: Vec<String>,
+    pub initialized: bool,
+    pub sandbox_status: serde_json::Value,
+    pub sandbox_failed: bool
 }
 
 impl SandboxConfig {
@@ -41,49 +42,46 @@ impl SandboxConfig {
         Self::default()
     }
 
-    fn check_is_initialized(&mut self) {
-        if self != &mut Self::new() {
-            self.initialized = true;
-        }
-
-        if self.compile_cmd.len() > 0 {
-            if self.compiler_output_file.len() > 0 {
-                self.initialized = true
-            } else {
-                self.initialized = false;
+    pub fn check_is_initialized(&mut self) {
+        if self.sandbox_executable.len() > 0 && self.source_file.len() > 0 && self.input_file.len() > 0
+        && self.output_file.len() > 0 && self.executable.len() > 0 &&
+           self.uid != 0 && self.gid != 0 && self.time_limit != 0 && self.memory_limit != 0 {
+            if self.compile_cmd.len() > 0 {
+                if self.compiler_output_file.len() > 0 {
+                    self.initialized = true
+                } else {
+                    self.initialized = false;
+                }
             }
+            else {
+                self.initialized = true;
+            }
+        }
+        else {
+            self.initialized = false;
         }
     }
 
     pub fn set_sandbox_executable(&mut self, executable: &String) {
-        if !std::path::Path::new(executable).exists() {
-            self.sandbox_executable = String::clone(executable);
-        }
-        else
-        {
-            panic!("Sandbox executable: \"{}\" does not exist!", executable);
+        match std::fs::read(executable) {
+            Ok(_) => self.sandbox_executable = executable.clone(),
+            Err(_) => panic!("Sandbox executable: \"{}\" does not exist!", executable)
         }
     }
 
     
     pub fn set_source_file(&mut self, source_file: &String) {
-        if !std::path::Path::new(source_file).exists() {
-            self.source_file = String::clone(source_file);
-        }
-        else
-        {
-            panic!("Source file: \"{}\" does not exist!", source_file);
+        match std::fs::read(source_file) {
+            Ok(_) => self.source_file = source_file.clone(),
+            Err(_) => panic!("Source file: \"{}\" does not exist!", source_file)
         }
     }
 
     
     pub fn set_input_file(&mut self, input_file: &String) {
-        if !std::path::Path::new(input_file).exists() {
-            self.input_file = String::clone(input_file);
-        }
-        else
-        {
-            panic!("Input file: \"{}\" does not exist!", input_file);
+        match std::fs::read(input_file) {
+            Ok(_) => self.input_file = input_file.clone(),
+            Err(_) => panic!("Input file: \"{}\" does not exist", input_file)
         }
     }
 
@@ -138,24 +136,64 @@ impl SandboxConfig {
     pub fn gen_cmd(&mut self) {
         self.check_is_initialized();
         if !self.initialized {
-            panic!("You need to set all the values before you can generate command");
-        }
-        let command: String;
-        if self.compile_cmd.len() > 0 {
-            command = format!("{} -s {} -i {} -o {} -c \"{}\" -g \"{}\" -e \"{}\" -r \"{}\" -t {} -m {} -u {} -d {}", self.sandbox_executable, self.source_file, self.input_file, 
-                                self.output_file, self.compile_cmd, self.compiler_output_file, self.executable, utils::join(self.executable_args.clone(), " "), 
-                                self.time_limit, self.memory_limit, self.uid, self.gid);
-        }
-        else {
-            command = format!("{} -s {} -i {} -o {} -e \"{}\" -r \"{}\" -t {} -m {} -u {} -d {}", self.sandbox_executable, self.source_file, self.input_file, 
-                                self.output_file, self.executable, utils::join(self.executable_args.clone(), " "), 
-                                self.time_limit, self.memory_limit, self.uid, self.gid);
+            panic!("You must set all the values as required to generate command");
         }
 
-        self.command = command;
+        self.command.push(String::from("-s"));
+        self.command.push(self.source_file.clone());
+        self.command.push(String::from("-i"));
+        self.command.push(self.input_file.clone());
+        self.command.push(String::from("-o"));
+        self.command.push(self.output_file.clone());
+        
+        if self.compile_cmd.len() != 0 {
+            self.command.push(String::from("-c"));
+            self.command.push(self.compile_cmd.clone());
+            self.command.push(String::from("-g"));
+            self.command.push(self.compiler_output_file.clone());
+        }
+
+        self.command.push(String::from("-e"));
+        self.command.push(self.executable.clone());
+        self.command.push(String::from("-r"));
+        self.command.push(self.executable_args.join(" "));
+
+        self.command.push(String::from("-t"));
+        self.command.push(format!("{}", self.time_limit.clone()));
+        self.command.push(String::from("-m"));
+        self.command.push(format!("{}", self.memory_limit.clone()));
+        self.command.push(String::from("-u"));
+        self.command.push(format!("{}", self.uid.clone()));
+        self.command.push(String::from("-d"));
+        self.command.push(format!("{}", self.gid.clone()));
+    }
+
+    pub fn run(&mut self)  {
+        self.check_is_initialized();
+        if !self.initialized {
+            panic!("You need to initialize before calling this function");
+        }
+        else if self.command.len() == 0 {
+            panic!("You need to generate command before calling this function");
+        }
+
+        let output = Command::new(self.sandbox_executable.clone())
+                              .args(self.command.clone())
+                              .output()
+                              .expect("Failed to run sandbox process. This is probably a system error");
+
+        if !output.status.success() {
+            self.sandbox_failed = true;
+            return;
+        }
+
+        match serde_json::from_str(&String::from_utf8_lossy(&output.stdout)) {
+            Ok(parsed_json) => self.sandbox_status = parsed_json,
+            Err(_) => self.sandbox_failed = true
+        }
     }
 
     pub fn get_cmd(&mut self) -> String {
-        self.command.clone()
+        self.command.join(" ")
     }
 }
