@@ -64,7 +64,7 @@ void Logger::Log::write_log(LOG_LEVEL log_level, const std::string &message)
     time_t now = time(0);
     tm *ltm = localtime(&now);
     std::string time_string;
-    time_string += std::to_string((1+(ltm->tm_mon))) + "th ";
+    time_string += std::to_string((ltm->tm_mday)) + "th ";
     time_string += months[ltm->tm_mon];
     time_string += " ";
     time_string += std::to_string(1900 + ltm->tm_year) + ", at ";
