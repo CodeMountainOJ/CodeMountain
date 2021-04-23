@@ -16,14 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use sandbox_client::sandboxconfig;
+use sandbox_client::sandboxclient;
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
     fn init_test() {
-        let config = sandboxconfig::SandboxConfig::new();
+        let config = sandboxclient::SandboxClient::new();
 
         assert_eq!(config.sandbox_executable, String::from(""));
         assert_eq!(config.source_file, String::from(""));
@@ -42,7 +42,7 @@ mod tests {
 
     #[test]
     fn setting_values() {
-        let mut config = sandboxconfig::SandboxConfig::new();
+        let mut config = sandboxclient::SandboxClient::new();
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
         config.set_input_file(&String::from("../build/input.txt"));
@@ -63,7 +63,7 @@ mod tests {
     #[test]
     fn setting_values_with_args_filled() { 
         let args: Vec<String> = vec![String::from("-a"), String::from("-b")];
-        let mut config = sandboxconfig::SandboxConfig::new();
+        let mut config = sandboxclient::SandboxClient::new();
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
         config.set_input_file(&String::from("../build/input.txt"));
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn setting_values_but_no_compilation() {
-        let mut config = sandboxconfig::SandboxConfig::new();
+        let mut config = sandboxclient::SandboxClient::new();
         let args = vec![String::from("../testprograms/python-helloworld/program.py")];
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/python-helloworld/program.py"));
@@ -102,7 +102,7 @@ mod tests {
 
     #[test]
     fn uninitialized_test() {
-        let mut config = sandboxconfig::SandboxConfig::new();
+        let mut config = sandboxclient::SandboxClient::new();
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.check_is_initialized();
         assert_eq!(config.initialized, false);
@@ -110,7 +110,7 @@ mod tests {
 
     #[test]
     fn output_test() {
-        let mut config = sandboxconfig::SandboxConfig::new();
+        let mut config = sandboxclient::SandboxClient::new();
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
         config.set_input_file(&String::from("../build/input.txt"));

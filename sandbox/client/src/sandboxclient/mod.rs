@@ -18,7 +18,7 @@
 use std::process::Command;
 
 #[derive(Debug, Default)]
-pub struct SandboxConfig {
+pub struct SandboxClient {
     pub sandbox_executable: String,
     pub source_file: String,
     pub input_file: String,
@@ -37,7 +37,7 @@ pub struct SandboxConfig {
     pub sandbox_failed: bool
 }
 
-impl SandboxConfig {
+impl SandboxClient {
     pub fn new() -> Self {
         Self::default()
     }
