@@ -23,7 +23,7 @@ jobs:
     - name: Installing libseccomp-dev
       run: sudo apt install libseccomp-dev
     - name: Making dummy user
-      run: sudo adduser -u 1002 -g 1002 dummy
+      run: sudo adduser -u 1002 dummy
     - name: Compiling Sandbox Executable
       run: cd sandbox && ./build.py --debug
     - name: Build
