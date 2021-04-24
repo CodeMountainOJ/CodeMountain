@@ -73,7 +73,7 @@ fn setting_values() {
     config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
     config.set_executable_args(&Vec::new());
     config.set_executable(&String::from("program"));
-    config.set_uid(std::env::var("TEST_UID").is_err());
+    config.set_uid(1001);
     config.set_gid(1001);
     config.set_time_limit(1);
     config.set_memory_limit(128);
@@ -119,7 +119,7 @@ fn setting_values_with_args_filled() {
     config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
     config.set_executable_args(&args);
     config.set_executable(&String::from("program"));
-    config.set_uid(std::env::var("TEST_UID").is_err());
+    config.set_uid(1001);
     config.set_gid(1001);
     config.set_time_limit(1);
     config.set_memory_limit(128);
@@ -161,7 +161,7 @@ fn setting_values_but_no_compilation() {
     config.set_output_file(&String::from("../build/output.txt"));
     config.set_executable_args(&args);
     config.set_executable(&String::from("/usr/bin/python"));
-    config.set_uid(std::env::var("TEST_UID").is_err());
+    config.set_uid(1001);
     config.set_gid(1001);
     config.set_time_limit(1);
     config.set_memory_limit(128);
