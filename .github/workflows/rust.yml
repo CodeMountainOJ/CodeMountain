@@ -23,8 +23,8 @@ jobs:
     - name: Installing Python
       run: sudo apt install python3
     - name: Compiling Sandbox Executable
-      run: cd sandbox/client && ./build.py
+      run: cd sandbox && ./build.py
     - name: Build
       run: cd sandbox/client && cargo build
     - name: Run tests
-      run: cd sandbox/client && sudo -E cargo test --verbose
+      run: cd sandbox/client && sudo -E $(which cargo) test --verbose
