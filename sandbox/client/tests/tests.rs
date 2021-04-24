@@ -43,11 +43,11 @@ mod tests {
     #[test]
     fn setting_values() {
         let mut config = sandboxclient::SandboxClient::new();
-        let generated_cmd = vec!["-s", "../testprograms/rm/rm.c", "-i", "../build/input.txt", "-o", "../build/output.txt", "-c", "/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram", "-g", "../build/compiler_output_file.txt", "-e", "program", "-r", "", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
+        let generated_cmd = vec!["-s", "../testprograms/rm/rm.c", "-i", "../testprograms/rm/input.txt", "-o", "../build/output.txt", "-c", "/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram", "-g", "../build/compiler_output_file.txt", "-e", "program", "-r", "", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
 
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
-        config.set_input_file(&String::from("../build/input.txt"));
+        config.set_input_file(&String::from("../testprograms/rm/input.txt"));
         config.set_output_file(&String::from("../build/output.txt"));
         config.set_compile_cmd(&String::from("/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram"));
         config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
@@ -66,11 +66,11 @@ mod tests {
     fn setting_values_with_args_filled() { 
         let args: Vec<String> = vec![String::from("-a"), String::from("-b")];
         let mut config = sandboxclient::SandboxClient::new();
-        let generated_cmd = vec!["-s", "../testprograms/rm/rm.c", "-i", "../build/input.txt", "-o", "../build/output.txt", "-c", "/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram", "-g", "../build/compiler_output_file.txt", "-e", "program", "-r", "-a -b", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
+        let generated_cmd = vec!["-s", "../testprograms/rm/rm.c", "-i", "../testprograms/rm/input.txt", "-o", "../build/output.txt", "-c", "/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram", "-g", "../build/compiler_output_file.txt", "-e", "program", "-r", "-a -b", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
 
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
-        config.set_input_file(&String::from("../build/input.txt"));
+        config.set_input_file(&String::from("../testprograms/rm/input.txt"));
         config.set_output_file(&String::from("../build/output.txt"));
         config.set_compile_cmd(&String::from("/usr/bin/gcc rm.c -DONLINE_JUDGE -oprogram"));
         config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
@@ -88,12 +88,12 @@ mod tests {
     #[test]
     fn setting_values_but_no_compilation() {
         let mut config = sandboxclient::SandboxClient::new();
-        let generated_cmd = vec!["-s", "../testprograms/python-helloworld/program.py", "-i", "../build/input.txt", "-o", "../build/output.txt", "-e", "/usr/bin/python", "-r", "../testprograms/python-helloworld/program.py", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
+        let generated_cmd = vec!["-s", "../testprograms/python-helloworld/program.py", "-i", "../testprograms/python-helloworld/input.txt", "-o", "../build/output.txt", "-e", "/usr/bin/python", "-r", "../testprograms/python-helloworld/program.py", "-t", "1", "-m", "128", "-u", "1001", "-d", "1001"];
 
         let args = vec![String::from("../testprograms/python-helloworld/program.py")];
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/python-helloworld/program.py"));
-        config.set_input_file(&String::from("../build/input.txt"));
+        config.set_input_file(&String::from("../testprograms/python-helloworld/input.txt"));
         config.set_output_file(&String::from("../build/output.txt"));
         config.set_executable_args(&args);
         config.set_executable(&String::from("/usr/bin/python"));
@@ -119,7 +119,7 @@ mod tests {
         let mut config = sandboxclient::SandboxClient::new();
         config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
         config.set_source_file(&String::from("../testprograms/rm/rm.c"));
-        config.set_input_file(&String::from("../build/input.txt"));
+        config.set_input_file(&String::from("../testprograms/rm/input.txt"));
         config.set_output_file(&String::from("../build/output.txt"));
         config.set_compile_cmd(&String::from("/usr/bin/gcc ../testprograms/rm/rm.c -DONLINE_JUDGE -o../build/program"));
         config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
