@@ -8,6 +8,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  SANDBOX_UID: 1002
+  SANDBOX_GID: 1002
 
 jobs:
   Test:
@@ -20,9 +22,11 @@ jobs:
       run: sudo apt update && sudo apt install -y clang cmake
     - name: Installing libseccomp-dev
       run: sudo apt install libseccomp-dev
+    - name: Making dummy user
+      run: sudo adduser -u 1002 -g 1002 dummy
     - name: Compiling Sandbox Executable
       run: cd sandbox && ./build.py --debug
     - name: Build
-      run: cd sandbox/client && cargo build
+      run: cd sandbox/client && cargo build -- --test-threads=1
     - name: Run tests and print logs
       run: cd sandbox/client && sudo -E $(which cargo) test --verbose; cat logs/*

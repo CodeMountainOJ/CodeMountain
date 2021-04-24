@@ -3,6 +3,9 @@ use std::io::Read;
 
 #[test]
 fn output_test() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/rm/rm.c"));
@@ -14,8 +17,8 @@ fn output_test() {
     config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
     config.set_executable_args(&Vec::new());
     config.set_executable(&String::from("../build/program"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
@@ -62,6 +65,9 @@ fn output_test() {
 
 #[test]
 fn testprogram_execve() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/execve/execve.c"));
@@ -73,8 +79,8 @@ fn testprogram_execve() {
     config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
     config.set_executable_args(&Vec::new());
     config.set_executable(&String::from("../build/program"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
@@ -151,6 +157,9 @@ fn testprogram_execve() {
 
 #[test]
 fn testprogram_python_helloworld() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+    
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/python-helloworld/program.py"));
@@ -158,8 +167,8 @@ fn testprogram_python_helloworld() {
     config.set_output_file(&String::from("../build/output.txt"));
     config.set_executable_args(&vec![String::from("../testprograms/python-helloworld/program.py")]);
     config.set_executable(&String::from("/usr/bin/python"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
@@ -236,6 +245,9 @@ fn testprogram_python_helloworld() {
 
 #[test]
 fn testprogram_python_input() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+    
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/python-input/program.py"));
@@ -243,8 +255,8 @@ fn testprogram_python_input() {
     config.set_output_file(&String::from("../build/output.txt"));
     config.set_executable_args(&vec![String::from("../testprograms/python-input/program.py")]);
     config.set_executable(&String::from("/usr/bin/python"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
@@ -321,6 +333,9 @@ fn testprogram_python_input() {
 
 #[test]
 fn testprogram_fs() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+    
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/fs/fs.c"));
@@ -332,8 +347,8 @@ fn testprogram_fs() {
     config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
     config.set_executable_args(&Vec::new());
     config.set_executable(&String::from("../build/program"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
@@ -410,6 +425,9 @@ fn testprogram_fs() {
 
 #[test]
 fn testprogram_python_requests() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+    
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/python-requests/program.py"));
@@ -417,8 +435,8 @@ fn testprogram_python_requests() {
     config.set_output_file(&String::from("../build/output.txt"));
     config.set_executable_args(&vec![String::from("../testprograms/python-requests/program.py")]);
     config.set_executable(&String::from("/usr/bin/python"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
@@ -495,6 +513,9 @@ fn testprogram_python_requests() {
 
 #[test]
 fn testprogram_rm() {
+    let uid = std::env::var("SANDBOX_UID").expect("Failed to get uid from env").parse::<u16>().unwrap();
+    let gid = std::env::var("SANDBOX_GID").expect("Failed to get gid from env").parse::<u16>().unwrap();
+    
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/rm/rm.c"));
@@ -506,8 +527,8 @@ fn testprogram_rm() {
     config.set_compiler_output_file(&String::from("../build/compiler_output_file.txt"));
     config.set_executable_args(&Vec::new());
     config.set_executable(&String::from("../build/program"));
-    config.set_uid(1001);
-    config.set_gid(1001);
+    config.set_uid(uid);
+    config.set_gid(gid);
     config.set_time_limit(1);
     config.set_memory_limit(128);
     config.gen_cmd();
