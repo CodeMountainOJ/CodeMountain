@@ -13,7 +13,7 @@
 
 int main()
 {
-    if(remove("program") == -EPERM)
+    if(remove("../build/program") == -EPERM) // this wouldn't work if it wasn't ../build/program as it will be ran from the client directory while cargo testing
     {
         perror("remove");
     }

