@@ -27,6 +27,6 @@ jobs:
     - name: Compiling Sandbox Executable
       run: cd sandbox && ./build.py --debug
     - name: Build
-      run: cd sandbox/client && cargo build -- --test-threads=1
+      run: cd sandbox/client && cargo build
     - name: Run tests and print logs
       run: cd sandbox/client && sudo -E $(which cargo) test --verbose; cat logs/*
