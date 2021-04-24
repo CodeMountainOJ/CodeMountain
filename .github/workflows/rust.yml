@@ -22,6 +22,8 @@ jobs:
         platform: x64
     - name: Installing libseccomp-dev
       run: sudo apt install libseccomp-dev
+    - name: Adding dummy user...
+      run: adduser -u 1001 dummy
     - name: Compiling Sandbox Executable
       run: cd sandbox && ./build.py
     - name: Build
