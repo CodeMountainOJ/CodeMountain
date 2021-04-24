@@ -122,10 +122,10 @@ void runtime(config* sandbox_config, result* result_struct)
         systemError();
     }
 #ifdef DEBUGMODE
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current euid: ") + std::to_string(geteuid()));
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current uid: ") + std::to_string(getuid()));
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current egid: ") + std::to_string(getegid()));
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current gid: ") + std::to_string(getgid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current euid: ") + std::to_string(geteuid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current uid: ") + std::to_string(getuid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current egid: ") + std::to_string(getegid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current gid: ") + std::to_string(getgid()));
 #endif
 
     if(setuid(sandbox_config->child_uid) != 0)
@@ -137,10 +137,10 @@ void runtime(config* sandbox_config, result* result_struct)
         systemError();
     }
 #ifdef DEBUGMODE
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current euid: ") + std::to_string(geteuid()));
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current uid: ") + std::to_string(getuid()));
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current egid: ") + std::to_string(getegid()));
-        logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Current gid: ") + std::to_string(getgid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current euid: ") + std::to_string(geteuid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current uid: ") + std::to_string(getuid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current egid: ") + std::to_string(getegid()));
+        logger.write_log(Logger::LOG_LEVEL::DEBUG, std::string("Current gid: ") + std::to_string(getgid()));
 #endif
 
     execve(sandbox_config->binary, &argv[0], environ);
