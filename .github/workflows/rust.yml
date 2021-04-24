@@ -23,4 +23,4 @@ jobs:
     - name: Build
       run: cd sandbox/client && cargo build
     - name: Run tests
-      run: cd sandbox/client && sudo cargo test --verbose
+      run: cd sandbox/client && sudo -E cargo test --verbose
