@@ -29,18 +29,22 @@ Logger::Log::Log(std::string log_file_name)
 {
     if(std::filesystem::exists(log_file_name)) {
         m_Log_File = std::fstream(log_file_name, std::ios::app);
-        if(chmod(log_file_name.c_str(), S_IRWXO) != 0) {
+        if(chmod(log_file_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
             std::cout<<"[FATAL] Cannot chmod() on log files!"<<std::endl;
             perror("chmod");
         }
     } else {
-        mkdir("logs", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH | S_IWOTH);
+        mkdir("logs", S_IRWXU | S_IRWXG | S_IRWXO);
         m_Log_File = std::fstream(log_file_name, std::ios::out);
-        if(chmod(log_file_name.c_str(), S_IRWXO) != 0) {
+        if(chmod(log_file_name.c_str(), S_IRWXU| S_IRWXG | S_IRWXO) != 0) {
             std::cout<<"[FATAL] Cannot chmod() on log files!"<<std::endl;
             perror("chmod");
         }
     }
+#ifdef DEBUGMODE
+    this->write_log(LOG_LEVEL::DEBUG, std::to_string(getuid()));
+    this->write_log(LOG_LEVEL::DEBUG, std::to_string(getgid()));
+#endif
 }
 
 void Logger::Log::write_log(LOG_LEVEL log_level, const std::string &message)
