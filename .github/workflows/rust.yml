@@ -21,7 +21,7 @@ jobs:
     - name: Installing libseccomp-dev
       run: sudo apt install libseccomp-dev
     - name: Compiling Sandbox Executable
-      run: cd sandbox && ./build.py
+      run: cd sandbox && ./build.py --debug
     - name: Build
       run: cd sandbox/client && cargo build
     - name: Run tests and print logs
