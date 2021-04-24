@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: cd sandbox/client && cargo build
     - name: Run tests and print logs
-      run: cd sandbox/client && sudo -E $(which cargo) test --verbose || cat logs/*
+      run: cd sandbox/client && sudo -E $(which cargo) test --verbose
