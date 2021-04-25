@@ -251,7 +251,7 @@ fn testprogram_python_input() {
     let mut config = sandboxclient::SandboxClient::new();
     config.set_sandbox_executable(&String::from("../build/codemountain_sandbox"));
     config.set_source_file(&String::from("../testprograms/python-input/program.py"));
-    config.set_input_file(&String::from("../testprograms/rm/input.txt"));
+    config.set_input_file(&String::from("../testprograms/python-input/input.txt"));
     config.set_output_file(&String::from("../build/output.txt"));
     config.set_executable_args(&vec![String::from("../testprograms/python-input/program.py")]);
     config.set_executable(&String::from("/usr/bin/python"));
