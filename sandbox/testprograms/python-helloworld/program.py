@@ -1,6 +1,6 @@
 """
  CodeMountain is a free and open source online judge open for everyone
- Copyright (C) 2021 MD Gaziur Rahman Noor
+ Copyright (C) 2021 MD Gaziur Rahman Noor and contributors
  
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

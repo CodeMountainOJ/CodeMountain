@@ -1,7 +1,7 @@
 #! /bin/env python
 """
  build.py is a Python script that simplifies CMake build process.
- Copyright (C) 2021 MD Gaziur Rahman Noor
+ Copyright (C) 2021 MD Gaziur Rahman Noor and contributors
  
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
