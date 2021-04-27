@@ -15,12 +15,52 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-fn main() {
-    let sandbox_executable_path = std::env::var("JUDGESERVER_SANDBOX_EXECUTABLE").expect("You need to set JUDGESERVER_SANDBOX_EXECUTABLE env var properly").clone();
+
+fn main() -> amiquip::Result<()> {
+    let sandbox_executable_path = std::env::var("JUDGESERVER_SANDBOX_EXECUTABLE").expect("You need to set JUDGESERVER_SANDBOX_EXECUTABLE env var properly");
+    let judgeserver_production = match std::env::var("JUDGESERVER_PRODUCTION") {
+        Ok(_) => true,
+        Err(_) => false
+    };
 
     match std::fs::read(&sandbox_executable_path) {
         Ok(_) => println!("Sandbox executable: {}", sandbox_executable_path.clone()),
         Err(_) => panic!("You need to set JUDGESERVER_SANDBOX_EXECUTABLE env var properly")
+    };
+
+    let mut connection: amiquip::Connection;
+
+    if judgeserver_production {
+        let production_amqp_url = std::env::var("JUDGESERVER_PRODUCTION_AMQP_URL").expect("You need to set JUDGESERVER_PRODUCTION_AMQP_URL env var properly");
+        connection = amiquip::Connection::open(&production_amqp_url)?;
     }
+    else {
+        connection = amiquip::Connection::insecure_open("amqp://guest:guest@localhost:5672")?;
+    }
+
+    let channel = connection.open_channel(None)?;
+
+    let queue = channel.queue_declare("judgeserver_job", amiquip::QueueDeclareOptions::default())?;
+
+    let consumer = queue.consume(amiquip::ConsumerOptions::default())?;
+
+    println!("Waiting for jobs. Press [Ctrl-C] to exit.");
+
+    for (i, message) in consumer.receiver().iter().enumerate() {
+        match message {
+            amiquip::ConsumerMessage::Delivery(delivery) => {
+                let body = String::from_utf8_lossy(&delivery.body);
+                println!("({:>3}) Received new message", i);
+                println!("{}", body);
+                consumer.ack(delivery)?;
+            }
+
+            other => {
+                println!("Consumer ended: {:?}", other);
+                break;
+            }
+        }
+    }
+
+    Ok(())
 }
