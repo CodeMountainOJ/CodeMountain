@@ -20,4 +20,4 @@
 #include "result.hpp"
 #include "run.hpp"
 
-void compile(config*, result*);
+void compile(config*);

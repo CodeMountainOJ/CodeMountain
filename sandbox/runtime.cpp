@@ -26,7 +26,7 @@
 #include <errno.h>
 #include "signal.hpp"
 
-void runtime(config* sandbox_config, result* result_struct)
+void runtime(config* sandbox_config)
 {
     FILE *runtime_input = fopen(sandbox_config->input_file.c_str(), "r");
     FILE *runtime_output = fopen(sandbox_config->output_file.c_str(), "w");
@@ -64,35 +64,30 @@ void runtime(config* sandbox_config, result* result_struct)
     if(runtime_input == NULL)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
-        result_struct->systemError = true;
         systemError();
     }
 
     if(runtime_output == NULL)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(FILE_OPEN_FAILURE));
-        result_struct->systemError = true;
         systemError();
     }
 
     if(dup2(fileno(runtime_output), fileno(stdout)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
-        result_struct->systemError = true;
         systemError();
     }
 
     if(dup2(fileno(runtime_output), fileno(stderr)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
-        result_struct->systemError = true;
         systemError();
     }
 
     if(dup2(fileno(runtime_input), fileno(stdin)) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(DUP2_FAILED));
-        result_struct->systemError = true;
         systemError();
     }
     
@@ -102,13 +97,11 @@ void runtime(config* sandbox_config, result* result_struct)
     if(setrlimit(RLIMIT_AS, &max_mem) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(RLIMIT_MEM_FAILED));
-        result_struct->systemError = true;
         systemError();
     }
 
 
-    set_rules(sandbox_config, result_struct); // seccomp
-    if(result_struct->systemError) // failed to set seccomp rule
+    if(set_rules(sandbox_config) != 0) // failed to set seccomp rule
     {
         systemError();
     }
@@ -117,7 +110,6 @@ void runtime(config* sandbox_config, result* result_struct)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SETGID_FAILED));
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Errno: ") + std::to_string(errno));
-        result_struct->systemError = true;
         perror("setgid");
         systemError();
     }
@@ -132,7 +124,6 @@ void runtime(config* sandbox_config, result* result_struct)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SETUID_FAILED));
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Errno: ") + std::to_string(errno));
-        result_struct->systemError = true;
         perror("setgid");
         systemError();
     }
@@ -145,6 +136,5 @@ void runtime(config* sandbox_config, result* result_struct)
 
     execve(sandbox_config->binary, &argv[0], environ);
     logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(EXECVE_FAILED));
-    result_struct->systemError = true;
     systemError();
 }

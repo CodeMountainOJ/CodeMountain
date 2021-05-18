@@ -44,7 +44,7 @@ void run(config *sandbox_config, result *result_struct)
         }
         else if (compile_pid == 0)
         {
-            compile(sandbox_config, result_struct);
+            compile(sandbox_config);
         }
         else if (compile_pid > 0)
         {
@@ -60,13 +60,7 @@ void run(config *sandbox_config, result *result_struct)
                 return;
             }
 
-            if (WTERMSIG(status) == SIGUSR1) // no need to continue
-            {
-                result_struct->systemError = true;
-                return;
-            }
-
-            if (status != 0)
+            if (WEXITSTATUS(status) != 0 || WTERMSIG(status) != 0)
             {
                 result_struct->compileErrors = true;
             }
@@ -86,7 +80,7 @@ void run(config *sandbox_config, result *result_struct)
     }
     else if (runtime_pid == 0)
     {
-        runtime(sandbox_config, result_struct);
+        runtime(sandbox_config);
     }
     else if (runtime_pid > 0)
     {
@@ -132,13 +126,13 @@ void run(config *sandbox_config, result *result_struct)
             result_struct->memoryLimitExceeded = true;
         }
 
-        if (WEXITSTATUS(status) != 0)
+        if (WTERMSIG(status) != 0)
         {
-            if (WEXITSTATUS(status) == ENOMEM)
+            if (WTERMSIG(status) == ENOMEM)
             {
                 result_struct->memoryLimitExceeded = true;
             }
-            else if (WEXITSTATUS(status) == SIGSEGV)
+            else if (WTERMSIG(status) == SIGSEGV)
             {
                 if (result_struct->usedMemory > sandbox_config->memory_limit)
                 {
@@ -149,8 +143,6 @@ void run(config *sandbox_config, result *result_struct)
                     result_struct->runtimeErrors = true;
                 }
             }
-            else
-                result_struct->runtimeErrors = true;
         }
 
         if (result_struct->spentTime > sandbox_config->time_limit)

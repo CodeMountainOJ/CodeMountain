@@ -23,7 +23,7 @@
 #include "log.hpp"
 #include "config.hpp"
 
-void set_rules(config *sandbox_config, result *result_struct)
+int set_rules(config *sandbox_config)
 {
     Logger::Log logger("./logs/SECCOMP-LOG.log");
     scmp_filter_ctx ctx = nullptr;
@@ -32,8 +32,7 @@ void set_rules(config *sandbox_config, result *result_struct)
     if(!ctx)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
-        return;
+        return -1;
     }
 
     #ifdef DEBUGMODE
@@ -44,24 +43,21 @@ void set_rules(config *sandbox_config, result *result_struct)
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_NE, (scmp_datum_t)(sandbox_config->binary))) == -1)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
-        return;
+        return -1;
     }
 
     // execveat
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execveat), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
-        return;
+        return -1;
     }
 
     // socket
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(socket), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
-        return;
+        return -1;
     }
 
     // // no rw, w using open
@@ -94,25 +90,25 @@ void set_rules(config *sandbox_config, result *result_struct)
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(clone), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
+        return -1;
     }
 
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(fork), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
+        return -1;
     }
 
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(vfork), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
+        return -1;
     }
 
     if(seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(kill), 0) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
+        return -1;
     }
 
 
@@ -120,11 +116,10 @@ void set_rules(config *sandbox_config, result *result_struct)
     if(seccomp_load(ctx) != 0)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SECCOMP_RULE_FAILED));
-        result_struct->systemError = true;
-        return;
+        return -1;
     }
 
     seccomp_release(ctx);
 
-    return;
+    return 0;
 }
