@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 amiquip = "0.4.0"
-sandbox_client = { path = "../../sandbox/client" }
+sandbox = { path = "../../sandbox/rust-binding" }
