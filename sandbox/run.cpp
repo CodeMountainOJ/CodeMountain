@@ -130,18 +130,26 @@ void run(config *sandbox_config, result *result_struct)
         {
             if (WTERMSIG(status) == ENOMEM)
             {
-                result_struct->memoryLimitExceeded = true;
+                result_struct->runtimeErrorSignal = WTERMSIG(status);
+                result_struct->runtimeErrors = true;
             }
             else if (WTERMSIG(status) == SIGSEGV)
             {
                 if (result_struct->usedMemory > sandbox_config->memory_limit)
                 {
                     result_struct->memoryLimitExceeded = true;
+                    result_struct->runtimeErrorSignal = WTERMSIG(status);
+                    result_struct->runtimeErrors = true;
                 }
                 else
                 {
+                    result_struct->runtimeErrorSignal = WTERMSIG(status);
                     result_struct->runtimeErrors = true;
                 }
+            }
+            else {
+                result_struct->runtimeErrorSignal = WTERMSIG(status);
+                result_struct->runtimeErrors = true;
             }
         }
 

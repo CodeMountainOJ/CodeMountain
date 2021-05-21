@@ -26,6 +26,7 @@ struct result
     bool timeLimitExceeded = false;
     bool memoryLimitExceeded = false;
     bool systemError = false;
-    int  spentTime;
-    int  usedMemory;
+    int  spentTime = 0;
+    int  usedMemory = 0;
+    int  runtimeErrorSignal = 0;
 };

@@ -165,7 +165,8 @@ int main(int argc, char** argv) {
                "\t\"memoryLimitExceeded\": %d,\n"
                "\t\"systemError\": %d,\n"
                "\t\"usedMemory\": %d,\n"
-               "\t\"spentTime\": %d\n"
+               "\t\"spentTime\": %d,\n"
+               "\t\"runtimeErrorSignal\": %d\n"
                "}\n",
                sandbox_result.compileErrors,
                sandbox_result.runtimeErrors,
@@ -173,7 +174,8 @@ int main(int argc, char** argv) {
                sandbox_result.memoryLimitExceeded,
                sandbox_result.systemError,
                sandbox_result.usedMemory,
-               sandbox_result.spentTime
+               sandbox_result.spentTime,
+               sandbox_result.runtimeErrorSignal
         );
     }
     catch(const std::runtime_error& e)
