@@ -17,8 +17,14 @@
 */
 
 #include <stdio.h>
+
 int main() {
     int i;
-    scanf("%d", i);
-    printf("%d", i);
+    scanf("%d", &i);
+
+    while(i--) {
+        int x, y;
+        scanf("%d %d", &x, &y);
+        printf("%d\n", x+y);
+    }
 }
