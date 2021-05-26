@@ -124,7 +124,7 @@ void runtime(config* sandbox_config)
     {
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string(SETUID_FAILED));
         logger.write_log(Logger::LOG_LEVEL::ERROR, std::string("Errno: ") + std::to_string(errno));
-        perror("setgid");
+        perror("setuid");
         systemError();
     }
 #ifdef DEBUGMODE
