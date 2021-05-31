@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/auth/login", web::post().to(auth::login::login_handler))
-            .route("/auth/login", web::post().to(auth::register::registration_handler))
+            .route("/auth/register", web::post().to(auth::register::registration_handler))
     })
     .bind("localhost:8080")?
     .run()
