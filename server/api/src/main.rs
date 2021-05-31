@@ -15,15 +15,27 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 #[macro_use]
 extern crate diesel;
-use actix_web::{ HttpServer, App };
+pub mod db;
+pub mod endpoints;
+pub mod errors;
+pub mod jwt;
+pub mod env;
+
+use actix_web::{ HttpServer, App, web };
+use endpoints::auth;
+use dotenv::dotenv;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+    env::do_env_check();
+
     HttpServer::new(|| {
         App::new()
+            .route("/auth/login", web::post().to(auth::login::login_handler))
+            .route("/auth/login", web::post().to(auth::register::registration_handler))
     })
     .bind("localhost:8080")?
     .run()

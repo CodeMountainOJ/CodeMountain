@@ -152,7 +152,7 @@ CREATE TABLE "contest_problems" (
 	"constraints" TEXT NOT NULL,
 	"available_langs" integer NOT NULL,
 	"date_created" TIMESTAMP NOT NULL DEFAULT current_timestamp,
-	"slug" varbit(20) NOT NULL,
+	"slug" VARCHAR(20) NOT NULL,
 	"contest" integer NOT NULL,
 	CONSTRAINT "contest_problems_pk" PRIMARY KEY ("id")
 ) WITH (

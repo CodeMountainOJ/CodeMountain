@@ -42,7 +42,7 @@ table! {
         constraints -> Text,
         available_langs -> Int4,
         date_created -> Timestamp,
-        slug -> Varbit,
+        slug -> Varchar,
         contest -> Int4,
     }
 }
