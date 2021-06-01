@@ -16,8 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use actix_web_validator::Validate;
+use serde::{ Deserialize, Serialize };
 
-#[derive(serde::Deserialize, serde::Serialize, Validate)]
+#[derive(Deserialize, Serialize, Validate)]
 pub struct LoginRequest {
     #[validate(email)]
     pub email: String,
@@ -25,7 +26,7 @@ pub struct LoginRequest {
     pub password: String
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Validate)]
+#[derive(Deserialize, Serialize, Validate)]
 pub struct RegisterRequest {
     #[validate(length(min = 3, max = 50))]
     pub firstname: String,
@@ -39,13 +40,13 @@ pub struct RegisterRequest {
     pub password: String
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct LoginTokens {
     pub access_token: String,
     pub refresh_token: String
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct RegisterReturnPayload {
     pub success: bool
 }

@@ -15,15 +15,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web_validator::{ Json };
+use actix_web_validator::Json;
 use actix_web::{ web::Json as actix_json, Responder };
-use super::payload;
+use super::payload::{ LoginRequest, LoginTokens };
 use crate::errors;
 use crate::db::user::query::get_user_by_email;
 use bcrypt::verify;
 use crate::jwt::sign::{ generate_accesstoken, generate_refreshtoken };
 
-pub async fn login_handler(req: Json<payload::LoginRequest>) -> Result<impl Responder, errors::Errors> {
+pub async fn login_handler(req: Json<LoginRequest>) -> Result<impl Responder, errors::Errors> {
     let user = match get_user_by_email(&req.email) {
         Ok(u) => u,
         Err(e) => return Err(e)
@@ -48,7 +48,7 @@ pub async fn login_handler(req: Json<payload::LoginRequest>) -> Result<impl Resp
             Err(_) => return Err(errors::Errors::InternalServerError)
         };
 
-        return Ok(actix_json(payload::LoginTokens {
+        return Ok(actix_json(LoginTokens {
             access_token,
             refresh_token
         }));
