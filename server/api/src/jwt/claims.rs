@@ -18,7 +18,14 @@
 use serde::{ Serialize, Deserialize };
 
 #[derive(Serialize, Deserialize)]
+pub enum TokenType {
+    AccessToken,
+    RefreshToken
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct Token {
     pub uid: i32,
-    pub exp: i64
+    pub exp: i64,
+    pub token_type: TokenType
 }

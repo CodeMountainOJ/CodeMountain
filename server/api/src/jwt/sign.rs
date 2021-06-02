@@ -17,6 +17,7 @@
  */
 use super::claims::Token;
 use jsonwebtoken::{encode, errors::Result, EncodingKey, Header};
+use super::claims::TokenType;
 
 fn sign(claims: impl serde::Serialize) -> Result<String> {
     encode(
@@ -34,6 +35,7 @@ pub fn generate_accesstoken(uid: &i32) -> Result<String> {
     let claims = Token {
         uid: uid.clone(),
         exp: (chrono::Utc::now() + chrono::Duration::minutes(5)).timestamp(),
+        token_type: TokenType::AccessToken
     };
 
     sign(claims)
@@ -43,6 +45,7 @@ pub fn generate_refreshtoken(uid: &i32) -> Result<String> {
     let claims = Token {
         uid: uid.clone(),
         exp: (chrono::Utc::now() + chrono::Duration::days(30)).timestamp(),
+        token_type: TokenType::RefreshToken
     };
 
     sign(claims)

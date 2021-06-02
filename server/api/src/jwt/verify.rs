@@ -15,3 +15,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+use jsonwebtoken::{ DecodingKey, Validation, decode, errors::Result, Algorithm, TokenData };
+use super::claims::Token;
+use std::env::var;
+
+fn verify(token: &String) -> Result<TokenData<Token>> {
+    decode::<Token>(&token, &DecodingKey::from_secret(
+        &var("JWT_SECRET_KEY").unwrap().as_bytes()
+    ), &Validation::new(Algorithm::HS256))
+}
+
+pub fn verify_token(token: &String) -> std::result::Result<i32, ()> {
+    match verify(&token) {
+        Ok(r) => Ok(r.claims.uid),
+        Err(_) => Err(())
+    }
+}

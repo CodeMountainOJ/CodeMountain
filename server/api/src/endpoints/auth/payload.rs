@@ -41,6 +41,16 @@ pub struct RegisterRequest {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct RefreshAccessTokenPayload {
+    pub refresh_token: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RefreshAccessTokenReturnPayload {
+    pub access_token: String
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct LoginTokens {
     pub access_token: String,
     pub refresh_token: String

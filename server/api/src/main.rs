@@ -38,6 +38,7 @@ async fn main() -> std::io::Result<()> {
             .data(create_pool())
             .route("/auth/login", web::post().to(auth::login::login_handler))
             .route("/auth/register", web::post().to(auth::register::registration_handler))
+            .route("/auth/token/refresh", web::post().to(auth::refresh_accesstoken::refresh_accesstoken))
     })
     .bind("localhost:8080")?
     .run()

@@ -23,6 +23,26 @@ use diesel::{ r2d2::ConnectionManager, PgConnection };
 use super::model::User;
 use crate::errors::Errors;
 
+
+pub fn get_user_by_uid(
+    user_id: &i32,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
+) -> Result<User, Errors> {
+    let results = match users.filter(id.eq_all(user_id))
+        .limit(5)
+        .load::<User>(conn) {
+            Ok(u) => u,
+            Err(_) => return Err(Errors::InternalServerError)
+        };
+    
+    if results.len() == 0 {
+        return Err(Errors::BadRequest(String::from("No such user")));
+    }
+
+    let user = results[0].clone();
+    Ok(user)
+}
+
 pub fn get_user_by_email(
     user_email: &String, 
     conn: &PooledConnection<ConnectionManager<PgConnection>>
