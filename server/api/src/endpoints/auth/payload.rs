@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web_validator::Validate;
+use validator::Validate;
 use serde::{ Deserialize, Serialize };
 
 #[derive(Deserialize, Serialize, Validate)]
