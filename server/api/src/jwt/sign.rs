@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use super::claims::Token;
+use super::claims::{AccessToken, RefreshToken};
 use jsonwebtoken::{encode, errors::Result, EncodingKey, Header};
 
 fn sign(claims: impl serde::Serialize) -> Result<String> {
@@ -31,7 +31,7 @@ fn sign(claims: impl serde::Serialize) -> Result<String> {
 }
 
 pub fn generate_accesstoken(uid: &i32) -> Result<String> {
-    let claims = Token {
+    let claims = AccessToken {
         uid: uid.clone(),
         exp: (chrono::Utc::now() + chrono::Duration::minutes(5)).timestamp(),
     };
@@ -40,7 +40,7 @@ pub fn generate_accesstoken(uid: &i32) -> Result<String> {
 }
 
 pub fn generate_refreshtoken(uid: &i32) -> Result<String> {
-    let claims = Token {
+    let claims = RefreshToken {
         uid: uid.clone(),
         exp: (chrono::Utc::now() + chrono::Duration::days(30)).timestamp(),
     };
