@@ -15,17 +15,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use crate::db::{establish_connection, schema};
+use crate::db::schema;
 use schema::users::dsl::*;
 use diesel::prelude::*;
+use r2d2::PooledConnection;
+use diesel::{ r2d2::ConnectionManager, PgConnection };
 use super::model::User;
 use crate::errors::Errors;
 
-pub fn get_user_by_email(user_email: &String) -> Result<User, Errors> {
-    let connection = establish_connection();
+pub fn get_user_by_email(
+    user_email: &String, 
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
+) -> Result<User, Errors> {
     let results = match users.filter(email.like(user_email))
         .limit(5)
-        .load::<User>(&connection) {
+        .load::<User>(conn) {
             Ok(u) => u,
             Err(_) => return Err(Errors::InternalServerError)
         };
@@ -38,11 +42,13 @@ pub fn get_user_by_email(user_email: &String) -> Result<User, Errors> {
     Ok(user)
 }
 
-pub fn get_user_by_firstname(user_firstname: &String) -> Result<User, Errors> {
-    let connection = establish_connection();
+pub fn get_user_by_firstname(
+    user_firstname: &String,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
+) -> Result<User, Errors> {
     let results = match users.filter(firstname.like(user_firstname))
         .limit(5)
-        .load::<User>(&connection) {
+        .load::<User>(conn) {
             Ok(u) => u,
             Err(_) => return Err(Errors::InternalServerError)
         };
@@ -55,11 +61,13 @@ pub fn get_user_by_firstname(user_firstname: &String) -> Result<User, Errors> {
     Ok(user)
 }
 
-pub fn get_user_by_username(user_username: &String) -> Result<User, Errors> {
-    let connection = establish_connection();
+pub fn get_user_by_username(
+    user_username: &String,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
+) -> Result<User, Errors> {
     let results = match users.filter(username.like(user_username))
         .limit(5)
-        .load::<User>(&connection) {
+        .load::<User>(conn) {
             Ok(u) => u,
             Err(_) => return Err(Errors::InternalServerError)
         };
@@ -75,9 +83,10 @@ pub fn get_user_by_username(user_username: &String) -> Result<User, Errors> {
 pub fn is_unique(
     user_firstname: &String,
     user_username: &String,
-    user_email: &String
+    user_email: &String,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
 ) -> Result<bool, Errors> {
-    match get_user_by_firstname(user_firstname) {
+    match get_user_by_firstname(user_firstname, conn) {
         Ok(_) => return Ok(false),
         Err(e) => {
             match e {
@@ -87,7 +96,7 @@ pub fn is_unique(
         }
     };
 
-    match get_user_by_username(user_username) {
+    match get_user_by_username(user_username, conn) {
         Ok(_) => return Ok(false),
         Err(e) => {
             match e {
@@ -97,7 +106,7 @@ pub fn is_unique(
         }
     };
 
-    match get_user_by_email(user_email) {
+    match get_user_by_email(user_email, conn) {
         Ok(_) => return Ok(false),
         Err(e) => {
             match e {

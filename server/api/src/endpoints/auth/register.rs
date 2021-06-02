@@ -15,19 +15,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web_validator::{ Json };
-use actix_web::{ web::Json as actix_json, Responder };
+use actix_web_validator::{ Json, };
+use actix_web::{ web::Json as actix_json, web::Data, Responder };
 use super::payload;
 use crate::errors;
 use crate::db::user::query::is_unique;
 use crate::db::user::mutation::create_user;
+use crate::db::Pool;
 use bcrypt::{hash, DEFAULT_COST};
 
-pub async fn registration_handler(req: Json<payload::RegisterRequest>) -> Result<impl Responder, errors::Errors> {
+pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::RegisterRequest>) -> Result<impl Responder, errors::Errors> {
+    let conn = match conn_pool.get() {
+        Ok(p) => p,
+        Err(_) => return Err(errors::Errors::InternalServerError)
+    };
+
     let is_unique = match is_unique(
         &req.firstname,
         &req.username,
-        &req.email
+        &req.email,
+        &conn
     ) {
         Ok(u) => u,
         Err(e) => return Err(e)
@@ -47,7 +54,8 @@ pub async fn registration_handler(req: Json<payload::RegisterRequest>) -> Result
         &req.lastname, 
         &req.username, 
         &req.email, 
-        &salted_password
+        &salted_password,
+        &conn
     );
 
     match user {

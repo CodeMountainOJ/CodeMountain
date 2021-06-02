@@ -15,7 +15,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use crate::db::{establish_connection, schema};
+use crate::db::schema;
+use r2d2::PooledConnection;
+use diesel::{ r2d2::ConnectionManager, PgConnection };
 use diesel::prelude::*;
 use super::model::{ User, NewUser };
 use crate::errors::Errors;
@@ -25,11 +27,10 @@ pub fn create_user<'a>(
     user_lastname: &'a String,
     user_username: &'a String,
     user_email: &'a String,
-    user_password: &'a String
+    user_password: &'a String,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
 ) -> Result<User, Errors> {
     use schema::users;
-
-    let conn = establish_connection();
 
     let new_user = NewUser {
         firstname: user_firstname,
@@ -41,7 +42,7 @@ pub fn create_user<'a>(
 
     match diesel::insert_into(users::table)
         .values(&new_user)
-        .get_result::<User>(&conn) {
+        .get_result::<User>(conn) {
             Ok(u) => Ok(u),
             Err(_) => Err(Errors::InternalServerError)
         }

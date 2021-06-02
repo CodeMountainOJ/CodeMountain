@@ -16,19 +16,24 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use actix_web_validator::Json;
-use actix_web::{ web::Json as actix_json, Responder };
+use actix_web::{ web::Json as actix_json, web::Data, Responder };
 use super::payload::{ LoginRequest, LoginTokens };
 use crate::errors;
 use crate::db::user::query::get_user_by_email;
+use crate::db::Pool;
 use bcrypt::verify;
 use crate::jwt::sign::{ generate_accesstoken, generate_refreshtoken };
 
-pub async fn login_handler(req: Json<LoginRequest>) -> Result<impl Responder, errors::Errors> {
-    let user = match get_user_by_email(&req.email) {
+pub async fn login_handler(conn_pool: Data<Pool>, req: Json<LoginRequest>) -> Result<impl Responder, errors::Errors> {
+    let conn = match conn_pool.get() {
+        Ok(p) => p,
+        Err(_) => return Err(errors::Errors::InternalServerError)
+    };
+    
+    let user = match get_user_by_email(&req.email, &conn) {
         Ok(u) => u,
         Err(e) => return Err(e)
     };
-
     let raw_password = req.password.clone();
     let salted_password = user.password;
 
