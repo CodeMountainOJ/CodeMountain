@@ -24,7 +24,7 @@ use crate::jwt::sign::generate_accesstoken;
 use crate::jwt::verify::verify_token;
 use crate::errors::Errors;
 
-pub async fn refresh_accesstoken(conn_pool: Data<Pool>, payload: actix_json<RefreshAccessTokenPayload>) -> Result<impl Responder, Errors> {
+pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_json<RefreshAccessTokenPayload>) -> Result<impl Responder, Errors> {
     let conn = match conn_pool.get() {
         Ok(p) => p,
         Err(_) => return Err(Errors::InternalServerError)
