@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web::{ FromRequest, HttpRequest, dev };
+use actix_web::{ FromRequest, HttpRequest, dev, web::Data };
 use crate::db::Pool;
 use crate::db::user::query::get_user_by_uid;
 use crate::errors::Errors;
@@ -45,7 +45,13 @@ impl FromRequest for AuthRequired {
             Err(_) => return err(Errors::BadRequest(String::from("Invalid authorization header value!")))
         };
 
-        let token = match verify_token(&token_str.to_string()) {
+        let token_without_bearer = token_str.split(' ').collect::<Vec<&str>>();
+
+        if token_without_bearer.len() < 2 {
+            return err(Errors::BadRequest(String::from("Invalid authorization header value!")));
+        }
+
+        let token = match verify_token(&token_without_bearer[1].to_string()) {
             Ok(t) => t,
             Err(_) => return err(Errors::AccessForbidden)
         };
@@ -54,8 +60,8 @@ impl FromRequest for AuthRequired {
             TokenType::AccessToken => (),
             _ => return err(Errors::AccessForbidden)
         };
-
-        let conn_pool = match req.app_data::<Pool>() {
+        
+        let conn_pool = match req.app_data::<Data<Pool>>() {
             Some(p) => p,
             None => return err(Errors::InternalServerError)
         };
