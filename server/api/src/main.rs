@@ -22,6 +22,7 @@ pub mod endpoints;
 pub mod errors;
 pub mod jwt;
 pub mod env;
+pub mod extractors;
 
 use actix_web::{ HttpServer, App, web };
 use endpoints::auth;
