@@ -25,9 +25,9 @@ fn verify(token: &String) -> Result<TokenData<Token>> {
     ), &Validation::new(Algorithm::HS256))
 }
 
-pub fn verify_token(token: &String) -> std::result::Result<i32, ()> {
+pub fn verify_token(token: &String) -> std::result::Result<Token, ()> {
     match verify(&token) {
-        Ok(r) => Ok(r.claims.uid),
+        Ok(r) => Ok(r.claims),
         Err(_) => Err(())
     }
 }

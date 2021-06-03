@@ -19,6 +19,7 @@ use actix_web::{ Responder, web::Json as actix_json, web::Data};
 use super::payload::{ RefreshAccessTokenPayload, RefreshAccessTokenReturnPayload };
 use crate::db::Pool;
 use crate::db::user::query::get_user_by_uid;
+use crate::jwt::claims::TokenType;
 use crate::jwt::sign::generate_accesstoken;
 use crate::jwt::verify::verify_token;
 use crate::errors::Errors;
@@ -30,10 +31,17 @@ pub async fn refresh_accesstoken(conn_pool: Data<Pool>, payload: actix_json<Refr
     };
     
     let token = &payload.refresh_token;
-    let uid = match verify_token(&token) {
-        Ok(u) => u,
+    let payload = match verify_token(&token) {
+        Ok(p) => p,
         Err(_) => return Err(Errors::InternalServerError)
     };
+
+    match payload.token_type {
+        TokenType::RefreshToken => (),
+        _ => return Err(Errors::BadRequest(String::from("Not a refresh token")))
+    }
+
+    let uid = payload.uid;
 
     match get_user_by_uid(&uid, &conn) {
         Ok(_) => (),
