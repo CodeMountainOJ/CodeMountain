@@ -15,5 +15,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-pub mod auth;
-pub mod user;
+use serde::{ Serialize, Deserialize };
+use validator::Validate;
+
+#[derive(Serialize, Deserialize, Validate)]
+pub struct FirstNamePayload {
+    #[validate(length(min = 3, max = 50))]
+    pub firstname: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SuccessPayload {
+    pub success: bool
+}

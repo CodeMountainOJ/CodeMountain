@@ -15,5 +15,5 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-pub mod auth;
-pub mod user;
+pub mod edit_firstname;
+pub mod payload;
