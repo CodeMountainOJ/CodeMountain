@@ -21,6 +21,7 @@ use diesel::{ r2d2::ConnectionManager, PgConnection };
 use diesel::prelude::*;
 use super::model::{ User, NewUser };
 use crate::errors::Errors;
+use schema::users::dsl::*;
 
 pub fn create_user<'a>(
     user_firstname: &'a String,
@@ -30,7 +31,6 @@ pub fn create_user<'a>(
     user_password: &'a String,
     conn: &PooledConnection<ConnectionManager<PgConnection>>
 ) -> Result<User, Errors> {
-    use schema::users;
 
     let new_user = NewUser {
         firstname: user_firstname,
@@ -40,8 +40,21 @@ pub fn create_user<'a>(
         password: user_password
     };
 
-    match diesel::insert_into(users::table)
+    match diesel::insert_into(users)
         .values(&new_user)
+        .get_result::<User>(conn) {
+            Ok(u) => Ok(u),
+            Err(_) => Err(Errors::InternalServerError)
+        }
+}
+
+pub fn edit_firstname(
+    user_id: i32,
+    user_firstname: &String,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
+) -> Result<User, Errors> {
+    match diesel::update(users.filter(id.eq(user_id)))
+        .set(firstname.eq(user_firstname))
         .get_result::<User>(conn) {
             Ok(u) => Ok(u),
             Err(_) => Err(Errors::InternalServerError)

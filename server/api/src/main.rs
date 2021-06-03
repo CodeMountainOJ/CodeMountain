@@ -26,6 +26,7 @@ pub mod extractors;
 
 use actix_web::{ HttpServer, App, web };
 use endpoints::auth;
+use endpoints::user;
 use dotenv::dotenv;
 use db::create_pool;
 
@@ -39,7 +40,8 @@ async fn main() -> std::io::Result<()> {
             .data(create_pool())
             .route("/auth/login", web::post().to(auth::login::login_handler))
             .route("/auth/register", web::post().to(auth::register::registration_handler))
-            .route("/auth/token/refresh", web::post().to(auth::refresh_accesstoken::refresh_accesstoken))
+            .route("/auth/token/refresh", web::post().to(auth::refresh_accesstoken::refresh_accesstoken_handler))
+            .route("/user/update/firstname", web::post().to(user::edit_firstname::edit_firstname_handler))
     })
     .bind("localhost:8080")?
     .run()
