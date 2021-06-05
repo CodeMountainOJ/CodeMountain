@@ -1,0 +1,33 @@
+name: Server API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  Test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up postgres
+      run: |
+        sudo apt update
+        sudo apt install -y postgresql
+        sudo service postgresql restart && sleep 3
+        sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'a3b2c100';"
+        sudo service postgresql restart && sleep 3
+    - name: Build the server
+      run: |
+        cd server/api
+        cargo build
+    - name: Run tests
+      run: |
+        cd server/api
+        cargo test
