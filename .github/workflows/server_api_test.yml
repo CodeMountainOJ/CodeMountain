@@ -23,6 +23,7 @@ jobs:
         sudo apt install -y postgresql
         sudo service postgresql restart && sleep 3
         sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'a3b2c100';"
+        sudo -u postgres psql -c "CREATE DATABASE codemountain_test;"
         sudo service postgresql restart && sleep 3
     - name: Build the server
       run: |
