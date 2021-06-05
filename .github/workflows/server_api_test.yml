@@ -27,6 +27,9 @@ jobs:
       run: |
         cd server/api
         cargo build
+    - name: Install Diesel CLI
+      run: |
+        cargo install diesel_cli --no-default-features --features postgres
     - name: Run migrations
       run: |
         cd server/api
