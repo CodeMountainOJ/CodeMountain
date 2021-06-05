@@ -33,7 +33,7 @@ pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_j
     let token = &payload.refresh_token;
     let payload = match verify_token(&token) {
         Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError)
+        Err(_) => return Err(Errors::BadRequest(String::from("Invalid token")))
     };
 
     match payload.token_type {
