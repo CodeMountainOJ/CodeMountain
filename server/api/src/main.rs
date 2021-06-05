@@ -24,6 +24,9 @@ pub mod jwt;
 pub mod env;
 pub mod extractors;
 
+#[cfg(test)]
+mod tests;
+
 use actix_web::{ HttpServer, App, web };
 use endpoints::auth;
 use endpoints::user;

@@ -19,3 +19,5 @@ chrono = { version = "0.4", features = ["serde"] }
 bcrypt = "0.8"
 r2d2 = "0.8.9"
 futures-util = "0.3"
+actix-rt = "2"
+lazy_static = "1"
