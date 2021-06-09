@@ -16,16 +16,16 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
-use crate::db::user::mutation::edit_firstname;
-use crate::endpoints::user::edit_firstname::edit_firstname_handler;
-use crate::endpoints::user::payload::FirstNamePayload;
+use crate::db::user::mutation::edit_lastname;
+use crate::endpoints::user::edit_lastname::edit_lastname_handler;
+use crate::endpoints::user::payload::LastNamePayload;
 use actix_web::{test, web, App};
 use std::env::set_var;
 
 static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI1LCJleHAiOjk5OTk5OTk5OTksInRva2VuX3R5cGUiOiJBY2Nlc3NUb2tlbiJ9.iIBHQu2ZT4rsdTR_wCTITcCERhOgzGswSt5wWB3sWio";
 
 #[actix_rt::test]
-async fn test_edit_firstname_successful() {
+async fn test_edit_lastname_successful() {
     set_var(
         "DATABASE_URL",
         "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test",
@@ -36,21 +36,21 @@ async fn test_edit_firstname_successful() {
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_firstname_handler)),
+            .route("/", web::post().to(edit_lastname_handler)),
     )
     .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&FirstNamePayload {
-            firstname: "Jawn".to_string(),
+        .set_json(&LastNamePayload {
+            lastname: "Doe".to_string(),
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
-    edit_firstname(25, &"John".to_string(), &pool.get().unwrap())
+    edit_lastname(25, &"Deo".to_string(), &pool.get().unwrap())
         .expect("Failed to revert the username");
 
     dbg!(resp.response());
@@ -58,7 +58,7 @@ async fn test_edit_firstname_successful() {
 }
 
 #[actix_rt::test]
-async fn test_edit_firstname_unsuccessful() {
+async fn test_edit_lastname_unsuccessful() {
     set_var(
         "DATABASE_URL",
         "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test",
@@ -69,14 +69,14 @@ async fn test_edit_firstname_unsuccessful() {
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_firstname_handler)),
+            .route("/", web::post().to(edit_lastname_handler)),
     )
     .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&FirstNamePayload {
-            firstname: "John".to_string(),
+        .set_json(&LastNamePayload {
+            firstname: "Deo".to_string(),
         })
         .to_request();
 

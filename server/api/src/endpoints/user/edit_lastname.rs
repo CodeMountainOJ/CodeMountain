@@ -1,6 +1,6 @@
 /*
  *  CodeMountain is a free and open source online judge open for everyone
- *  Copyright (C) 2021 MD Gaziur Rahman Noor and contributors
+ *  Copyright (C) 2021 Uthsob Chakra Borty and contributors
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,20 +15,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use super::payload::FirstNamePayload;
+use super::payload::LastNamePayload;
 use super::payload::SuccessPayload;
-use crate::db::user::mutation::edit_firstname;
-use crate::db::user::query::get_user_by_firstname;
+use crate::db::user::mutation::edit_lastname;
 use crate::db::Pool;
 use crate::errors::Errors;
 use crate::extractors::auth::AuthRequired;
 use actix_web::{web::Data, web::Json as actix_json, Responder};
 use actix_web_validator::Json;
 
-pub async fn edit_firstname_handler(
+pub async fn edit_lastname_handler(
     conn_pool: Data<Pool>,
-    user: AuthRequired,
-    req: Json<FirstNamePayload>,
+    user: AuthRequired,    req: Json<LastNamePayload>,
 ) -> Result<impl Responder, Errors> {
     let conn = match conn_pool.get() {
         Ok(p) => p,
@@ -36,15 +34,9 @@ pub async fn edit_firstname_handler(
     };
 
     let user_id = user.user.id;
-    let new_firstname = req.firstname.clone();
+    let new_lastname = req.lastname.clone();
 
-    // check if new firstname is unique
-    match get_user_by_firstname(&new_firstname, &conn) {
-        Ok(_) => return Err(Errors::BadRequest(String::from("Firstname is not unique!"))),
-        Err(_) => (), // unique
-    }
-
-    match edit_firstname(user_id, &new_firstname, &conn) {
+    match edit_lastname(user_id, &new_lastname, &conn) {
         Ok(_) => return Ok(actix_json(SuccessPayload { success: true })),
         Err(_) => return Err(Errors::InternalServerError),
     }
