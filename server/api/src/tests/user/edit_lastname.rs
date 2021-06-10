@@ -43,20 +43,22 @@ async fn test_edit_lastname_successful() {
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
         .set_json(&LastNamePayload {
-            lastname: "Doe".to_string(),
+            lastname: "Dow".to_string(),
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
-    edit_lastname(25, &"Deo".to_string(), &pool.get().unwrap())
+    edit_lastname(25, &"Doe".to_string(), &pool.get().unwrap())
         .expect("Failed to revert the username");
 
     dbg!(resp.response());
     assert!(resp.status().is_success(), "This should be successful");
 }
 
+/// Lastnames doesn't require to be unique, that's why we are going to test if it accepts invalid
+/// lastnames or not
 #[actix_rt::test]
 async fn test_edit_lastname_unsuccessful() {
     set_var(
@@ -76,7 +78,7 @@ async fn test_edit_lastname_unsuccessful() {
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
         .set_json(&LastNamePayload {
-            firstname: "Deo".to_string(),
+            lastname: "Do".to_string(),
         })
         .to_request();
 
