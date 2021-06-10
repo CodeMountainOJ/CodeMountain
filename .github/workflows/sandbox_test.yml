@@ -2,9 +2,9 @@ name: Sandbox Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, untested ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, untested ]
 
 env:
   CARGO_TERM_COLOR: always
