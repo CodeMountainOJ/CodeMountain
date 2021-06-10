@@ -51,8 +51,8 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(auth::refresh_accesstoken::refresh_accesstoken_handler),
             )
             .route(
-                "/user/update/lastname",
-                web::post().to(user::edit_lastname::edit_lastname_handler),
+                "/user/update/firstname",
+                web::post().to(user::edit_firstname::edit_firstname_handler),
             )
             .route(
                 "/user/update/lastname",
