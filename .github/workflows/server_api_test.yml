@@ -2,9 +2,9 @@ name: Server API Tests
 
 on:
   push:
-    branches: [ main, fixing-workflow ]
+    branches: [ main, untested ]
   pull_request:
-    branches: [ main, fixing-workflow ]
+    branches: [ main, untested ]
 
 env:
   CARGO_TERM_COLOR: always
