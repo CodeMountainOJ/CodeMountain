@@ -57,7 +57,7 @@ void Logger::Log::write_log(LOG_LEVEL log_level, const std::string &message)
         "MAR",
         "APR",
         "MAY",
-        "JUN"
+        "JUN",
         "JUL",
         "AUG",
         "SEP",
