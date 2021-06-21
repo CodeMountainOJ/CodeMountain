@@ -74,5 +74,6 @@ INSERT INTO users(id, firstname, lastname, username, email, password) VALUES (25
 ```
 
 Make sure you are inserting the user into the ```codemountain_test``` database. This will add an user with john_doe@example.com as the email and "password" as the password. Compile the api server using ```cargo build```. To make a release binary, run ```cargo build --release```. Set the environment variables ```DATABASE_URL``` and ```JWT_SECRET_KEY``` in the env or store in a ```.env``` file inside the project directory(```server/api```). Here, ```DATABASE_URL``` should be the connection url for the db and ```JWT_SECRET_KEY``` is the secret key used to sign the access/refreshtokens. Then execute it ```cargo run``` for debug build and ```cargo run --release``` for release build. If you want to run local tests, then run ```cargo test```.
+And finally, you should set the REDIS_CON env variable inside the .env or directly in the environment. But, here's a catch. It doesn't do anything right now, so you can set any value into that variable. It'll be relevent in future.
 
 Endpoints of the API are in the server/api/main.rs. API documentation will be created later.
