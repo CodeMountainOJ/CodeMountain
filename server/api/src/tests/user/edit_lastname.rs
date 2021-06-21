@@ -17,7 +17,7 @@
 */
 use crate::db::create_pool;
 use crate::db::user::mutation::edit_lastname;
-use crate::endpoints::user::edit_lastname::edit_lastname_handler;
+use crate::endpoints::user::data_update::edit_lastname_handler;
 use crate::endpoints::user::payload::LastNamePayload;
 use actix_web::{test, web, App};
 use std::env::set_var;

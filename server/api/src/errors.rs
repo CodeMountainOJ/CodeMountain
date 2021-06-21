@@ -24,44 +24,44 @@ pub enum Errors {
     InternalServerError,
 
     #[display(fmt = "BadRequest: {}", _0)]
-    BadRequest(String),
+    BadRequest(&'static str),
 
     #[display(fmt = "Access Forbidden")]
     AccessForbidden
 }
 impl ResponseError for Errors {
+    fn status_code(&self) -> StatusCode {
+        match *self {
+            Errors::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            Errors::BadRequest(_) => StatusCode::BAD_REQUEST,
+            Errors::AccessForbidden => StatusCode::FORBIDDEN
+        }
+    }
+
     fn error_response(&self) -> HttpResponse {
         
         #[derive(serde::Serialize)]
         struct Ret {
             pub success: bool,
-            pub error: String
+            pub error: &'static str
         }
         
         match self {
             Errors::InternalServerError => {
                 HttpResponse::InternalServerError().json(Ret {
                     success: false,
-                    error: String::from("Internal Server Error")
+                    error: "Internal Server Error"
                 })
             }
 
-            Errors::BadRequest(ref message) => HttpResponse::BadRequest().json(Ret {
+            Errors::BadRequest(message) => HttpResponse::BadRequest().json(Ret {
                 success: false,
-                error: message.clone().to_string()
+                error: message
             }),
             Errors::AccessForbidden => HttpResponse::Forbidden().json(Ret {
                 success: false,
-                error: String::from("Access forbidden")
+                error: "Access forbidden"
             })
-        }
-    }
-
-    fn status_code(&self) -> StatusCode {
-        match *self {
-            Errors::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
-            Errors::BadRequest(_) => StatusCode::BAD_REQUEST,
-            Errors::AccessForbidden => StatusCode::FORBIDDEN
         }
     }
 }

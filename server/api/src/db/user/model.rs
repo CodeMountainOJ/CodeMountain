@@ -35,15 +35,15 @@ pub struct User {
 impl Clone for User {
     fn clone(&self) -> User {
         User {
-            id: self.id.clone(),
+            id: self.id,
             firstname: self.firstname.clone(),
             lastname: self.lastname.clone(),
             username: self.username.clone(),
             password: self.password.clone(),
             email: self.email.clone(),
-            rating: self.rating.clone(),
-            joined: self.joined.clone(),
-            banned: self.banned.clone(),
+            rating: self.rating,
+            joined: self.joined,
+            banned: self.banned,
             avatar: self.avatar.clone()
         }
     }
@@ -52,9 +52,9 @@ impl Clone for User {
 #[derive(Insertable)]
 #[table_name="users"]
 pub struct NewUser<'a> {
-    pub firstname: &'a String,
-    pub lastname: &'a String,
-    pub username: &'a String,
-    pub password: &'a String,
-    pub email: &'a String
+    pub firstname: &'a str,
+    pub lastname: &'a str,
+    pub username: &'a str,
+    pub password: &'a str,
+    pub email: &'a str
 }

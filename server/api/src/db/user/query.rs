@@ -31,8 +31,8 @@ pub fn get_user_by_uid(
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
     };
-    if results.len() == 0 {
-        return Err(Errors::BadRequest(String::from("No such user")));
+    if results.is_empty() {
+        return Err(Errors::BadRequest("No such user"));
     }
 
     let user = results[0].clone();
@@ -40,7 +40,7 @@ pub fn get_user_by_uid(
 }
 
 pub fn get_user_by_email(
-    user_email: &String,
+    user_email: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     let results = match users
@@ -51,8 +51,8 @@ pub fn get_user_by_email(
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
     };
-    if results.len() == 0 {
-        return Err(Errors::BadRequest(String::from("No such user")));
+    if results.is_empty() {
+        return Err(Errors::BadRequest("No such user"));
     }
 
     let user = results[0].clone();
@@ -60,7 +60,7 @@ pub fn get_user_by_email(
 }
 
 pub fn get_user_by_firstname(
-    user_firstname: &String,
+    user_firstname: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     let results = match users
@@ -71,8 +71,8 @@ pub fn get_user_by_firstname(
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
     };
-    if results.len() == 0 {
-        return Err(Errors::BadRequest(String::from("No such user")));
+    if results.is_empty() {
+        return Err(Errors::BadRequest("No such user"));
     }
 
     let user = results[0].clone();
@@ -80,7 +80,7 @@ pub fn get_user_by_firstname(
 }
 
 pub fn get_user_by_lastname(
-    user_lastname: &String,
+    user_lastname: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     let results = match users
@@ -91,8 +91,8 @@ pub fn get_user_by_lastname(
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
     };
-    if results.len() == 0 {
-        return Err(Errors::BadRequest(String::from("No such user")));
+    if results.is_empty() {
+        return Err(Errors::BadRequest("No such user"));
     }
 
     let user = results[0].clone();
@@ -100,7 +100,7 @@ pub fn get_user_by_lastname(
 }
 
 pub fn get_user_by_username(
-    user_username: &String,
+    user_username: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     let results = match users
@@ -111,8 +111,8 @@ pub fn get_user_by_username(
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
     };
-    if results.len() == 0 {
-        return Err(Errors::BadRequest(String::from("No such user")));
+    if results.is_empty() {
+        return Err(Errors::BadRequest("No such user"));
     }
 
     let user = results[0].clone();
@@ -120,32 +120,29 @@ pub fn get_user_by_username(
 }
 
 pub fn is_unique(
-    user_firstname: &String,
-    user_username: &String,
-    user_email: &String,
+    user_firstname: &str,
+    user_username: &str,
+    user_email: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<bool, Errors> {
     match get_user_by_firstname(user_firstname, conn) {
         Ok(_) => return Ok(false),
-        Err(e) => match e {
-            Errors::InternalServerError => return Err(Errors::InternalServerError),
-            _ => (),
+        Err(e) => if let Errors::InternalServerError = e {
+            return Err(Errors::InternalServerError)
         },
     };
 
     match get_user_by_username(user_username, conn) {
         Ok(_) => return Ok(false),
-        Err(e) => match e {
-            Errors::InternalServerError => return Err(Errors::InternalServerError),
-            _ => (),
+        Err(e) => if let Errors::InternalServerError = e {
+            return Err(Errors::InternalServerError)
         },
     };
 
     match get_user_by_email(user_email, conn) {
         Ok(_) => return Ok(false),
-        Err(e) => match e {
-            Errors::InternalServerError => return Err(Errors::InternalServerError),
-            _ => (),
+        Err(e) => if let Errors::InternalServerError = e {
+            return Err(Errors::InternalServerError)
         },
     };
 

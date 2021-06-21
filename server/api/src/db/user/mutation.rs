@@ -24,11 +24,11 @@ use r2d2::PooledConnection;
 use schema::users::dsl::*;
 
 pub fn create_user<'a>(
-    user_firstname: &'a String,
-    user_lastname: &'a String,
-    user_username: &'a String,
-    user_email: &'a String,
-    user_password: &'a String,
+    user_firstname: &'a str,
+    user_lastname: &'a str,
+    user_username: &'a str,
+    user_email: &'a str,
+    user_password: &'a str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     let new_user = NewUser {
@@ -50,7 +50,7 @@ pub fn create_user<'a>(
 
 pub fn edit_firstname(
     user_id: i32,
-    user_firstname: &String,
+    user_firstname: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     match diesel::update(users.filter(id.eq(user_id)))
@@ -63,7 +63,7 @@ pub fn edit_firstname(
 }
 pub fn edit_lastname(
     user_id: i32,
-    user_lastname: &String,
+    user_lastname: &str,
     conn: &PooledConnection<ConnectionManager<PgConnection>>,
 ) -> Result<User, Errors> {
     match diesel::update(users.filter(id.eq(user_id)))
@@ -73,4 +73,17 @@ pub fn edit_lastname(
         Ok(u) => Ok(u),
         Err(_) => Err(Errors::InternalServerError),
     }
+}
+
+pub fn update_password(
+    user_id: i32,
+    new_password: &str,
+    conn: &PooledConnection<ConnectionManager<PgConnection>>
+) -> Result<User, Errors> {
+    match diesel::update(users.filter(id.eq(user_id)))
+        .set(password.eq(new_password))
+        .get_result::<User>(conn) {
+            Ok(u) => Ok(u),
+            Err(_) => Err(Errors::InternalServerError)
+        }
 }

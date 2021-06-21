@@ -57,6 +57,21 @@ pub struct LoginTokens {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct RegisterReturnPayload {
+pub struct ReturnStatus {
     pub success: bool
+}
+
+#[derive(Validate)]
+#[derive(Serialize, Deserialize)]
+pub struct SendPasswordResetTokenPayload {
+    #[validate(email)]
+    pub email: String
+}
+
+#[derive(Validate)]
+#[derive(Serialize, Deserialize)]
+pub struct ResetPasswordPayload {
+    pub reset_token: String,
+    #[validate(length(min = 8, max = 100))]
+    pub password: String
 }

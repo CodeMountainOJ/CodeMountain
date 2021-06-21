@@ -41,7 +41,7 @@ pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::Regi
     };
 
     if !is_unique {
-        return Err(errors::Errors::BadRequest(String::from("Some user data is not unique")));
+        return Err(errors::Errors::BadRequest("Some user data is not unique"));
     }
 
     let salted_password = match hash(&req.password, DEFAULT_COST) {
@@ -59,7 +59,7 @@ pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::Regi
     );
 
     match user {
-        Ok(_) => Ok(actix_json(payload::RegisterReturnPayload {
+        Ok(_) => Ok(actix_json(payload::ReturnStatus {
             success: true
         })),
         Err(e) => Err(e)

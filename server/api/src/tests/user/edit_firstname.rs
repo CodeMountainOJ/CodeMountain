@@ -17,7 +17,7 @@
 */
 use crate::db::create_pool;
 use crate::db::user::mutation::edit_firstname;
-use crate::endpoints::user::edit_firstname::edit_firstname_handler;
+use crate::endpoints::user::data_update::edit_firstname_handler;
 use crate::endpoints::user::payload::FirstNamePayload;
 use actix_web::{test, web, App};
 use std::env::set_var;

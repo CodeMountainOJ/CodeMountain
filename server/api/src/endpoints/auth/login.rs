@@ -59,5 +59,5 @@ pub async fn login_handler(conn_pool: Data<Pool>, req: Json<LoginRequest>) -> Re
         }));
     }
 
-    Err(errors::Errors::BadRequest(String::from("Wrong password!")))
+    Err(errors::Errors::BadRequest("Wrong password!"))
 }

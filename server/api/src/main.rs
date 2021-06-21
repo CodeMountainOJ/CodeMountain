@@ -23,6 +23,8 @@ pub mod env;
 pub mod errors;
 pub mod extractors;
 pub mod jwt;
+pub mod mailer;
+pub mod redis;
 
 #[cfg(test)]
 mod tests;
@@ -51,12 +53,20 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(auth::refresh_accesstoken::refresh_accesstoken_handler),
             )
             .route(
+                "/auth/get/passwordresettoken",
+                web::post().to(auth::recovery::send_password_reset_email)
+            )
+            .route(
+                "/auth/reset/password",
+                web::post().to(auth::recovery::recover_password)
+            )
+            .route(
                 "/user/update/firstname",
-                web::post().to(user::edit_firstname::edit_firstname_handler),
+                web::post().to(user::data_update::edit_firstname_handler),
             )
             .route(
                 "/user/update/lastname",
-                web::post().to(user::edit_lastname::edit_lastname_handler),
+                web::post().to(user::data_update::edit_lastname_handler),
             )
     })
     .bind("localhost:8080")?

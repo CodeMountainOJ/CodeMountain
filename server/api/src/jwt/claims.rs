@@ -20,7 +20,8 @@ use serde::{ Serialize, Deserialize };
 #[derive(Serialize, Deserialize)]
 pub enum TokenType {
     AccessToken,
-    RefreshToken
+    RefreshToken,
+    PasswordResetToken
 }
 
 #[derive(Serialize, Deserialize)]

@@ -31,21 +31,21 @@ pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_j
     };
     
     let token = &payload.refresh_token;
-    let payload = match verify_token(&token) {
+    let payload = match verify_token(token) {
         Ok(p) => p,
-        Err(_) => return Err(Errors::BadRequest(String::from("Invalid token")))
+        Err(_) => return Err(Errors::BadRequest("Invalid token"))
     };
 
     match payload.token_type {
         TokenType::RefreshToken => (),
-        _ => return Err(Errors::BadRequest(String::from("Not a refresh token")))
+        _ => return Err(Errors::BadRequest("Not a refresh token"))
     }
 
     let uid = payload.uid;
 
     match get_user_by_uid(&uid, &conn) {
         Ok(_) => (),
-        Err(_) => return Err(Errors::BadRequest(String::from("Invalid or malformed token"))),
+        Err(_) => return Err(Errors::BadRequest("Invalid or malformed token")),
     }
 
     let access_token = match generate_accesstoken(&uid) {

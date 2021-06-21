@@ -18,6 +18,10 @@
 use std::env::var;
 
 pub fn do_env_check() {
-    var("JWT_SECRET_KEY").expect("JWT_SECRET_KEY must be present in the env");
-    var("DATABASE_URL").expect("DATABASE_URL must be present in the env");
+    var("REDIS_CON").expect("REDIS_CON is not set");
+    var("SMTP_EMAIL").expect("SMTP_EMAIL is not set");
+    var("SMTP_PASSWORD").expect("SMTP_PASSWORD is not set");
+    var("SMTP_SERVER").expect("SMTP_SERVER is not set");
+    var("JWT_SECRET_KEY").expect("JWT_SECRET_KEY is not set");
+    var("DATABASE_URL").expect("DATABASE_URL is not set");
 }

@@ -37,18 +37,18 @@ impl FromRequest for AuthRequired {
     fn from_request(req: &HttpRequest, _payload: &mut dev::Payload) -> Self::Future {
         let token_hv = match req.headers().get("authorization") {
             Some(t) => t,
-            None => return err(Errors::BadRequest(String::from("No authorization headers included!"))),
+            None => return err(Errors::BadRequest("No authorization headers included!")),
         };
 
         let token_str = match token_hv.to_str() {
             Ok(t) => t.to_string(),
-            Err(_) => return err(Errors::BadRequest(String::from("Invalid authorization header value!")))
+            Err(_) => return err(Errors::BadRequest("Invalid authorization header value!"))
         };
 
         let token_without_bearer = token_str.split(' ').collect::<Vec<&str>>();
 
         if token_without_bearer.len() < 2 {
-            return err(Errors::BadRequest(String::from("Invalid authorization header value!")));
+            return err(Errors::BadRequest("Invalid authorization header value!"));
         }
 
         let token = match verify_token(&token_without_bearer[1].to_string()) {
@@ -94,6 +94,6 @@ impl FromRequest for AuthRequired {
     where
         F: FnOnce(Self::Config) -> Self::Config,
     {
-        f(Self::Config::default())
+        f(())
     }
 }
