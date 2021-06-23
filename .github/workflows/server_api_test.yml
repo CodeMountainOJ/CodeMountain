@@ -44,3 +44,7 @@ jobs:
       run: |
         cd server/api
         cargo test
+    - name: Run Clippy
+      run: |
+        cd server/api
+        cargo clippy
