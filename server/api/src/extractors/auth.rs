@@ -38,20 +38,19 @@ impl FromRequest for AuthRequired {
         let token_hv = match req.headers().get("authorization") {
             Some(t) => t,
             None => return err(Errors::BadRequest("No authorization headers included!")),
-        };
+        }.to_str().map_or_else(|_| "", |s| s);
 
-        let token_str = match token_hv.to_str() {
-            Ok(t) => t.to_string(),
-            Err(_) => return err(Errors::BadRequest("Invalid authorization header value!"))
-        };
-
-        let token_without_bearer = token_str.split(' ').collect::<Vec<&str>>();
-
-        if token_without_bearer.len() < 2 {
-            return err(Errors::BadRequest("Invalid authorization header value!"));
+        if token_hv.is_empty() {
+            return err(Errors::AccessForbidden);
+        }
+        
+        let split_token = token_hv.split_whitespace().collect::<Vec<&str>>();
+        if split_token.len() != 2 {
+            return err(Errors::AccessForbidden);
         }
 
-        let token = match verify_token(&token_without_bearer[1].to_string()) {
+        let raw_token = split_token[1];
+        let token = match verify_token(&raw_token) {
             Ok(t) => t,
             Err(_) => return err(Errors::AccessForbidden)
         };
