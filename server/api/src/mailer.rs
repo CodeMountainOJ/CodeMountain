@@ -16,7 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use lettre::transport::smtp::{authentication::Credentials, Error};
-use lettre::{Message, SmtpTransport, Transport};
+use lettre::{
+    message::MultiPart,
+    Message, SmtpTransport, Transport,
+};
 
 pub fn mail(body: String, receiver: &str, subject: &str) -> Result<(), Error> {
     let smtp_email = std::env::var("SMTP_EMAIL").unwrap();
@@ -27,7 +30,8 @@ pub fn mail(body: String, receiver: &str, subject: &str) -> Result<(), Error> {
         .from(smtp_email.parse().unwrap())
         .to(receiver.parse().unwrap())
         .subject(subject)
-        .body(body)
+        .multipart(MultiPart::alternative_plain_html(body.clone(), body)
+        )
         .unwrap();
 
     let creds = Credentials::new(smtp_email, smtp_password);
