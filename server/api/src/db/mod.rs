@@ -37,8 +37,5 @@ pub fn create_pool() -> Pool {
 }
 
 pub fn get_conn(conn_pool: &Pool) -> Result<PooledConnection<ConnectionManager<PgConnection>>, Error> {
-    match conn_pool.get() {
-        Ok(connection) => Ok(connection),
-        Err(e) => Err(e)
-    }
+    conn_pool.get()
 }

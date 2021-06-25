@@ -29,10 +29,7 @@ pub fn create_user<'a>(
     user_password: &'a str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     let new_user = NewUser {
         firstname: user_firstname,
@@ -56,10 +53,7 @@ pub fn edit_firstname(
     user_firstname: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     match diesel::update(users.filter(id.eq(user_id)))
         .set(firstname.eq(user_firstname))
@@ -74,10 +68,7 @@ pub fn edit_lastname(
     user_lastname: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     match diesel::update(users.filter(id.eq(user_id)))
         .set(lastname.eq(user_lastname))
@@ -93,10 +84,7 @@ pub fn update_password(
     new_password: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     match diesel::update(users.filter(id.eq(user_id)))
         .set(password.eq(new_password))

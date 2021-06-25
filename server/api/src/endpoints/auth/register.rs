@@ -25,24 +25,18 @@ use crate::db::Pool;
 use bcrypt::{hash, DEFAULT_COST};
 
 pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::RegisterRequest>) -> Result<impl Responder, errors::Errors> {
-    let is_unique = match is_unique(
+    let is_unique = is_unique(
         &req.firstname,
         &req.username,
         &req.email,
         conn_pool.as_ref()
-    ) {
-        Ok(u) => u,
-        Err(e) => return Err(e)
-    };
+    )?;
 
     if !is_unique {
         return Err(errors::Errors::BadRequest("Some user data is not unique"));
     }
 
-    let salted_password = match hash(&req.password, DEFAULT_COST) {
-        Ok(pwd) => pwd,
-        Err(_) => return Err(errors::Errors::InternalServerError)
-    };
+    let salted_password = hash(&req.password, DEFAULT_COST).map_err(|_| errors::Errors::InternalServerError)?;
 
     let user = create_user(
         &req.firstname,

@@ -67,12 +67,7 @@ impl FromRequest for AuthRequired {
 
         let user = match get_user_by_uid(&token.uid, conn_pool.as_ref()) {
             Ok(u) => u,
-            Err(e) => {
-                match e {
-                    Errors::BadRequest(_) => return err(Errors::AccessForbidden),
-                    _ => return err(Errors::InternalServerError)
-                }
-            }
+            Err(e) => return err(e)
         };
 
         ok(AuthRequired {

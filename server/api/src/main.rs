@@ -21,7 +21,7 @@ pub mod db;
 pub mod endpoints;
 pub mod env;
 pub mod errors;
-pub mod extractors;
+pub mod guards;
 pub mod jwt;
 pub mod mailer;
 pub mod redis;

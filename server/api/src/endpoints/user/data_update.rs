@@ -22,7 +22,7 @@ use crate::db::user::mutation::edit_firstname;
 use crate::db::user::query::get_user_by_firstname;
 use crate::db::Pool;
 use crate::errors::Errors;
-use crate::extractors::auth::AuthRequired;
+use crate::guards::auth::AuthRequired;
 use actix_web::{web::Data, web::Json as actix_json, Responder};
 use actix_web_validator::Json;
 

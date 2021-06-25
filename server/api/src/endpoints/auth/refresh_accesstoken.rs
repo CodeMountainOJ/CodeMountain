@@ -26,10 +26,7 @@ use crate::errors::Errors;
 
 pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_json<RefreshAccessTokenPayload>) -> Result<impl Responder, Errors> {
     let token = &payload.refresh_token;
-    let payload = match verify_token(token) {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::BadRequest("Invalid token"))
-    };
+    let payload = verify_token(token).map_err(|_| Errors::BadRequest("Invalid token"))?;
 
     match payload.token_type {
         TokenType::RefreshToken => (),
@@ -38,15 +35,9 @@ pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_j
 
     let uid = payload.uid;
 
-    match get_user_by_uid(&uid, conn_pool.as_ref()) {
-        Ok(_) => (),
-        Err(_) => return Err(Errors::BadRequest("Invalid or malformed token")),
-    }
+    get_user_by_uid(&uid, conn_pool.as_ref()).map_err(|_| Errors::BadRequest("Invalid or malformed token"))?;
 
-    let access_token = match generate_accesstoken(&uid) {
-        Ok(t) => t,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let access_token = generate_accesstoken(&uid).map_err(|_| Errors::InternalServerError)?;
 
     Ok(actix_json(RefreshAccessTokenReturnPayload {
         access_token

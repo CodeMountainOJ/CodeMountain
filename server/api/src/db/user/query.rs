@@ -25,15 +25,14 @@ pub fn get_user_by_uid(
     user_id: &i32,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
     
-    let results = match users.filter(id.eq_all(user_id)).limit(5).load::<User>(&conn) {
-        Ok(u) => u,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+    let results = users
+        .filter(id.eq_all(user_id))
+        .limit(5)
+        .load::<User>(&conn)
+        .map_err(|_| Errors::InternalServerError)?;
+    
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -46,19 +45,13 @@ pub fn get_user_by_email(
     user_email: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
     
-    let results = match users
+    let results = users
         .filter(email.like(user_email))
         .limit(5)
         .load::<User>(&conn)
-    {
-        Ok(u) => u,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+        .map_err(|_| Errors::InternalServerError)?;
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -71,19 +64,14 @@ pub fn get_user_by_firstname(
     user_firstname: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
     
-    let results = match users
+    let results = users
         .filter(firstname.like(user_firstname))
         .limit(5)
         .load::<User>(&conn)
-    {
-        Ok(u) => u,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+        .map_err(|_| Errors::InternalServerError)?;
+    
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -96,19 +84,14 @@ pub fn get_user_by_lastname(
     user_lastname: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
     
-    let results = match users
+    let results = users
         .filter(lastname.like(user_lastname))
         .limit(5)
         .load::<User>(&conn)
-    {
-        Ok(u) => u,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+        .map_err(|_| Errors::InternalServerError)?;
+    
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -121,19 +104,14 @@ pub fn get_user_by_username(
     user_username: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = match get_conn(&conn_pool) {
-        Ok(c) => c,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
     
-    let results = match users
+    let results = users
         .filter(username.like(user_username))
         .limit(5)
         .load::<User>(&conn)
-    {
-        Ok(u) => u,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+        .map_err(|_| Errors::InternalServerError)?;
+    
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }

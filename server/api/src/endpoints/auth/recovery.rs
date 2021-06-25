@@ -54,25 +54,16 @@ pub async fn send_password_reset_email(
     let user_email = payload.email.clone();
 
     // check if the user exists
-    let user = match get_user_by_email(&user_email, &conn_pool.as_ref()) {
-        Ok(u) => u,
-        Err(e) => return Err(e),
-    };
+    let user = get_user_by_email(&user_email, &conn_pool.as_ref())?;
 
-    let reset_token = match generate_passwordresettoken(&user.id, &(jwt_secret_key + &user.password)) {
-        Ok(tok) => tok,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+    let reset_token = generate_passwordresettoken(&user.id, &(jwt_secret_key + &user.password))
+        .map_err(|_| Errors::InternalServerError)?;
 
-    let mut template = match std::fs::read("email_templates/password_reset.html") {
-        Ok(b) => {
-            match String::from_utf8(b) {
-                Ok(tp) => tp,
-                Err(_) => return Err(Errors::InternalServerError)
-            }
-        },
-        Err(_) => return Err(Errors::InternalServerError)
-    };
+    let mut template = String::from_utf8(
+        std::fs::read("email_templates/password_reset.html")
+            .map_err(|_| Errors::InternalServerError)?,
+    )
+    .map_err(|_| Errors::InternalServerError)?;
 
     template = template.replace("{{lastname}}", &user.lastname);
     template = template.replace("{{username}}", &user.username);
@@ -81,13 +72,10 @@ pub async fn send_password_reset_email(
     match mail(
         template,
         &user.email,
-        "Password Recovery For CodeMountainOJ Account"
+        "Password Recovery For CodeMountainOJ Account",
     ) {
         Ok(_) => Ok(actix_json(ReturnStatus { success: true })),
-        Err(e) => {
-            println!("{}", e);
-            Err(Errors::InternalServerError)
-        }
+        Err(_) => Err(Errors::InternalServerError),
     }
 }
 
@@ -100,35 +88,20 @@ pub async fn recover_password(
     let token = payload.reset_token.clone();
     let new_password = payload.password.clone();
 
-    let token_data = match decode_without_secret(&token) {
-        Ok(payload) => payload,
-        Err(_) => return Err(Errors::BadRequest("Invalid token!"))
-    };
+    let token_data = decode_without_secret(&token).map_err(|_| Errors::InternalServerError)?;
+    let user = get_user_by_uid(&token_data.uid, &conn_pool.as_ref())?;
 
-    let user = match get_user_by_uid(&token_data.uid, &conn_pool.as_ref()) {
-        Ok(u) => u,
-        Err(e) => return Err(e)
-    };
-
-    match verify_token_using_custom_secret(&token, &(jwt_secret_key + &user.password)) {
-        Ok(_) => (),
-        Err(_) => return Err(Errors::BadRequest("Invalid reset token")),
-    };
+    verify_token_using_custom_secret(&token, &(jwt_secret_key + &user.password))
+        .map_err(|_| Errors::BadRequest("Invalid reset token"))?;
 
     match token_data.token_type {
         crate::jwt::claims::TokenType::PasswordResetToken => (),
         _ => return Err(Errors::BadRequest("Invalid reset token")),
     }
 
-    let user = match get_user_by_uid(&token_data.uid, &conn_pool.as_ref()) {
-        Ok(u) => u,
-        Err(e) => return Err(e),
-    };
+    let user = get_user_by_uid(&token_data.uid, &conn_pool.as_ref())?;
 
-    let salted_password = match hash(&new_password, DEFAULT_COST) {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
+    let salted_password = hash(&new_password, DEFAULT_COST).map_err(|_| Errors::InternalServerError)?;
 
     match update_password(user.id, &salted_password, &conn_pool.as_ref()) {
         Ok(_) => Ok(actix_json(ReturnStatus { success: true })),
