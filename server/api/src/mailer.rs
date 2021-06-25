@@ -18,7 +18,7 @@
 use lettre::transport::smtp::{authentication::Credentials, Error};
 use lettre::{Message, SmtpTransport, Transport};
 
-pub fn mail(body: String, receiver: String, subject: String) -> Result<(), Error> {
+pub fn mail(body: String, receiver: &str, subject: &str) -> Result<(), Error> {
     let smtp_email = std::env::var("SMTP_EMAIL").unwrap();
     let smtp_password = std::env::var("SMTP_PASSWORD").unwrap();
     let smtp_server = std::env::var("SMTP_SERVER").unwrap();

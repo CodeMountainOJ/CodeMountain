@@ -64,21 +64,24 @@ pub async fn send_password_reset_email(
         Err(_) => return Err(Errors::InternalServerError),
     };
 
+    let mut template = match std::fs::read("email_templates/password_reset.html") {
+        Ok(b) => {
+            match String::from_utf8(b) {
+                Ok(tp) => tp,
+                Err(_) => return Err(Errors::InternalServerError)
+            }
+        },
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+
+    template = template.replace("{{lastname}}", &user.lastname);
+    template = template.replace("{{username}}", &user.username);
+    template = template.replace("{{otp}}", &reset_token);
+
     match mail(
-        format!(
-            r#"
-Dear {},
-We've just received a request to reset the password of you CodeMountainOJ account with username: {}.
-If you haven't made that request, you can ignore this email. Otherwise, copy this token and paste it into the respective field.
-
-{}
-
-IMPORTANT NOTE: Never share this email with other people
-"#,
-            user.email, user.username, reset_token
-        ),
-        user.email,
-        String::from("Password Recovery For CodeMountainOJ Account"),
+        template,
+        &user.email,
+        "Password Recovery For CodeMountainOJ Account"
     ) {
         Ok(_) => Ok(actix_json(ReturnStatus { success: true })),
         Err(e) => {
