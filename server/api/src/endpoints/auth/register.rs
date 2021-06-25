@@ -25,16 +25,11 @@ use crate::db::Pool;
 use bcrypt::{hash, DEFAULT_COST};
 
 pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::RegisterRequest>) -> Result<impl Responder, errors::Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(errors::Errors::InternalServerError)
-    };
-
     let is_unique = match is_unique(
         &req.firstname,
         &req.username,
         &req.email,
-        &conn
+        conn_pool.as_ref()
     ) {
         Ok(u) => u,
         Err(e) => return Err(e)
@@ -55,7 +50,7 @@ pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::Regi
         &req.username, 
         &req.email, 
         &salted_password,
-        &conn
+        &conn_pool
     );
 
     match user {

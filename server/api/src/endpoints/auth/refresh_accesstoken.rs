@@ -25,11 +25,6 @@ use crate::jwt::verify::verify_token;
 use crate::errors::Errors;
 
 pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_json<RefreshAccessTokenPayload>) -> Result<impl Responder, Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError)
-    };
-    
     let token = &payload.refresh_token;
     let payload = match verify_token(token) {
         Ok(p) => p,
@@ -43,7 +38,7 @@ pub async fn refresh_accesstoken_handler(conn_pool: Data<Pool>, payload: actix_j
 
     let uid = payload.uid;
 
-    match get_user_by_uid(&uid, &conn) {
+    match get_user_by_uid(&uid, conn_pool.as_ref()) {
         Ok(_) => (),
         Err(_) => return Err(Errors::BadRequest("Invalid or malformed token")),
     }

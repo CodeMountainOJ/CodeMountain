@@ -49,17 +49,12 @@ pub async fn send_password_reset_email(
     conn_pool: Data<Pool>,
     payload: Json<SendPasswordResetTokenPayload>,
 ) -> Result<impl Responder, Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
-
     let jwt_secret_key = std::env::var("JWT_SECRET_KEY").unwrap();
 
     let user_email = payload.email.clone();
 
     // check if the user exists
-    let user = match get_user_by_email(&user_email, &conn) {
+    let user = match get_user_by_email(&user_email, &conn_pool.as_ref()) {
         Ok(u) => u,
         Err(e) => return Err(e),
     };
@@ -97,10 +92,6 @@ pub async fn recover_password(
     conn_pool: Data<Pool>,
     payload: Json<ResetPasswordPayload>,
 ) -> Result<impl Responder, Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
     let jwt_secret_key = std::env::var("JWT_SECRET_KEY").unwrap();
 
     let token = payload.reset_token.clone();
@@ -111,7 +102,7 @@ pub async fn recover_password(
         Err(_) => return Err(Errors::BadRequest("Invalid token!"))
     };
 
-    let user = match get_user_by_uid(&token_data.uid, &conn) {
+    let user = match get_user_by_uid(&token_data.uid, &conn_pool.as_ref()) {
         Ok(u) => u,
         Err(e) => return Err(e)
     };
@@ -126,7 +117,7 @@ pub async fn recover_password(
         _ => return Err(Errors::BadRequest("Invalid reset token")),
     }
 
-    let user = match get_user_by_uid(&token_data.uid, &conn) {
+    let user = match get_user_by_uid(&token_data.uid, &conn_pool.as_ref()) {
         Ok(u) => u,
         Err(e) => return Err(e),
     };
@@ -136,7 +127,7 @@ pub async fn recover_password(
         Err(_) => return Err(Errors::InternalServerError),
     };
 
-    match update_password(user.id, &salted_password, &conn) {
+    match update_password(user.id, &salted_password, &conn_pool.as_ref()) {
         Ok(_) => Ok(actix_json(ReturnStatus { success: true })),
         Err(e) => Err(e),
     }

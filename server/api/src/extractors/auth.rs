@@ -65,12 +65,7 @@ impl FromRequest for AuthRequired {
             None => return err(Errors::InternalServerError)
         };
 
-        let conn = match conn_pool.get() {
-            Ok(c) => c,
-            Err(_) => return err(Errors::InternalServerError)
-        };
-
-        let user = match get_user_by_uid(&token.uid, &conn) {
+        let user = match get_user_by_uid(&token.uid, conn_pool.as_ref()) {
             Ok(u) => u,
             Err(e) => {
                 match e {

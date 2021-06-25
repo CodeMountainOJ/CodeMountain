@@ -25,12 +25,7 @@ use bcrypt::verify;
 use crate::jwt::sign::{ generate_accesstoken, generate_refreshtoken };
 
 pub async fn login_handler(conn_pool: Data<Pool>, req: Json<LoginRequest>) -> Result<impl Responder, errors::Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(errors::Errors::InternalServerError)
-    };
-    
-    let user = match get_user_by_email(&req.email, &conn) {
+    let user = match get_user_by_email(&req.email, conn_pool.as_ref()) {
         Ok(u) => u,
         Err(e) => return Err(e)
     };

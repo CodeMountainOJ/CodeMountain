@@ -31,20 +31,15 @@ pub async fn edit_firstname_handler(
     user: AuthRequired,
     req: Json<FirstNamePayload>,
 ) -> Result<impl Responder, Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
-
     let user_id = user.user.id;
     let new_firstname = req.firstname.clone();
 
     // check if new firstname is unique
-    if get_user_by_firstname(&new_firstname, &conn).is_ok() {
+    if get_user_by_firstname(&new_firstname, conn_pool.as_ref()).is_ok() {
         return Err(Errors::BadRequest("Firstname is not unique!"))
     }
 
-    match edit_firstname(user_id, &new_firstname, &conn) {
+    match edit_firstname(user_id, &new_firstname, conn_pool.as_ref()) {
         Ok(_) => Ok(actix_json(SuccessPayload { success: true })),
         Err(_) => Err(Errors::InternalServerError),
     }
@@ -54,15 +49,10 @@ pub async fn edit_lastname_handler(
     conn_pool: Data<Pool>,
     user: AuthRequired,    req: Json<LastNamePayload>,
 ) -> Result<impl Responder, Errors> {
-    let conn = match conn_pool.get() {
-        Ok(p) => p,
-        Err(_) => return Err(Errors::InternalServerError),
-    };
-
     let user_id = user.user.id;
     let new_lastname = req.lastname.clone();
 
-    match edit_lastname(user_id, &new_lastname, &conn) {
+    match edit_lastname(user_id, &new_lastname, conn_pool.as_ref()) {
         Ok(_) => Ok(actix_json(SuccessPayload { success: true })),
         Err(_) => Err(Errors::InternalServerError),
     }

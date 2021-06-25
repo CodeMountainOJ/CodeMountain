@@ -19,7 +19,9 @@ pub mod schema;
 pub mod user;
 
 use diesel::prelude::*;
-use diesel::r2d2::{self, ConnectionManager};
+use diesel::r2d2::ConnectionManager;
+use r2d2::Error;
+use r2d2::PooledConnection;
 use std::env;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
@@ -32,4 +34,11 @@ pub fn create_pool() -> Pool {
     r2d2::Pool::builder()
                         .build(connection_manager)
                         .expect("Failed to create database connection pool")
+}
+
+pub fn get_conn(conn_pool: &Pool) -> Result<PooledConnection<ConnectionManager<PgConnection>>, Error> {
+    match conn_pool.get() {
+        Ok(connection) => Ok(connection),
+        Err(e) => Err(e)
+    }
 }

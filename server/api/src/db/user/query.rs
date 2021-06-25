@@ -16,18 +16,21 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use super::model::User;
-use crate::db::schema;
+use crate::db::{Pool, get_conn, schema};
 use crate::errors::Errors;
 use diesel::prelude::*;
-use diesel::{r2d2::ConnectionManager, PgConnection};
-use r2d2::PooledConnection;
 use schema::users::dsl::*;
 
 pub fn get_user_by_uid(
     user_id: &i32,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let results = match users.filter(id.eq_all(user_id)).limit(5).load::<User>(conn) {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+    
+    let results = match users.filter(id.eq_all(user_id)).limit(5).load::<User>(&conn) {
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
     };
@@ -41,12 +44,17 @@ pub fn get_user_by_uid(
 
 pub fn get_user_by_email(
     user_email: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+    
     let results = match users
         .filter(email.like(user_email))
         .limit(5)
-        .load::<User>(conn)
+        .load::<User>(&conn)
     {
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
@@ -61,12 +69,17 @@ pub fn get_user_by_email(
 
 pub fn get_user_by_firstname(
     user_firstname: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+    
     let results = match users
         .filter(firstname.like(user_firstname))
         .limit(5)
-        .load::<User>(conn)
+        .load::<User>(&conn)
     {
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
@@ -81,12 +94,17 @@ pub fn get_user_by_firstname(
 
 pub fn get_user_by_lastname(
     user_lastname: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+    
     let results = match users
         .filter(lastname.like(user_lastname))
         .limit(5)
-        .load::<User>(conn)
+        .load::<User>(&conn)
     {
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
@@ -101,12 +119,17 @@ pub fn get_user_by_lastname(
 
 pub fn get_user_by_username(
     user_username: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+    
     let results = match users
         .filter(username.like(user_username))
         .limit(5)
-        .load::<User>(conn)
+        .load::<User>(&conn)
     {
         Ok(u) => u,
         Err(_) => return Err(Errors::InternalServerError),
@@ -123,23 +146,23 @@ pub fn is_unique(
     user_firstname: &str,
     user_username: &str,
     user_email: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<bool, Errors> {
-    match get_user_by_firstname(user_firstname, conn) {
+    match get_user_by_firstname(user_firstname, &conn_pool) {
         Ok(_) => return Ok(false),
         Err(e) => if let Errors::InternalServerError = e {
             return Err(Errors::InternalServerError)
         },
     };
 
-    match get_user_by_username(user_username, conn) {
+    match get_user_by_username(user_username, &conn_pool) {
         Ok(_) => return Ok(false),
         Err(e) => if let Errors::InternalServerError = e {
             return Err(Errors::InternalServerError)
         },
     };
 
-    match get_user_by_email(user_email, conn) {
+    match get_user_by_email(user_email, &conn_pool) {
         Ok(_) => return Ok(false),
         Err(e) => if let Errors::InternalServerError = e {
             return Err(Errors::InternalServerError)

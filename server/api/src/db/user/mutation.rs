@@ -16,11 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use super::model::{NewUser, User};
-use crate::db::schema;
+use crate::db::{Pool, schema, get_conn};
 use crate::errors::Errors;
 use diesel::prelude::*;
-use diesel::{r2d2::ConnectionManager, PgConnection};
-use r2d2::PooledConnection;
 use schema::users::dsl::*;
 
 pub fn create_user<'a>(
@@ -29,8 +27,13 @@ pub fn create_user<'a>(
     user_username: &'a str,
     user_email: &'a str,
     user_password: &'a str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+
     let new_user = NewUser {
         firstname: user_firstname,
         lastname: user_lastname,
@@ -41,7 +44,7 @@ pub fn create_user<'a>(
 
     match diesel::insert_into(users)
         .values(&new_user)
-        .get_result::<User>(conn)
+        .get_result::<User>(&conn)
     {
         Ok(u) => Ok(u),
         Err(_) => Err(Errors::InternalServerError),
@@ -51,11 +54,16 @@ pub fn create_user<'a>(
 pub fn edit_firstname(
     user_id: i32,
     user_firstname: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+
     match diesel::update(users.filter(id.eq(user_id)))
         .set(firstname.eq(user_firstname))
-        .get_result::<User>(conn)
+        .get_result::<User>(&conn)
     {
         Ok(u) => Ok(u),
         Err(_) => Err(Errors::InternalServerError),
@@ -64,11 +72,16 @@ pub fn edit_firstname(
 pub fn edit_lastname(
     user_id: i32,
     user_lastname: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>,
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+
     match diesel::update(users.filter(id.eq(user_id)))
         .set(lastname.eq(user_lastname))
-        .get_result::<User>(conn)
+        .get_result::<User>(&conn)
     {
         Ok(u) => Ok(u),
         Err(_) => Err(Errors::InternalServerError),
@@ -78,11 +91,16 @@ pub fn edit_lastname(
 pub fn update_password(
     user_id: i32,
     new_password: &str,
-    conn: &PooledConnection<ConnectionManager<PgConnection>>
+    conn_pool: &Pool,
 ) -> Result<User, Errors> {
+    let conn = match get_conn(&conn_pool) {
+        Ok(c) => c,
+        Err(_) => return Err(Errors::InternalServerError)
+    };
+
     match diesel::update(users.filter(id.eq(user_id)))
         .set(password.eq(new_password))
-        .get_result::<User>(conn) {
+        .get_result::<User>(&conn) {
             Ok(u) => Ok(u),
             Err(_) => Err(Errors::InternalServerError)
         }
