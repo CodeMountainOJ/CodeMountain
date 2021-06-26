@@ -1,1 +1,0 @@
-remove: Permission denied
