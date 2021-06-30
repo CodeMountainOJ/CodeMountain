@@ -8,4 +8,5 @@ authors = ["The CodeMountain Developers"]
 
 [dependencies]
 seccomp = "0.1"
-libc = "0.2"
+nix = "0.21.0"
+clap = "2.33.3"
