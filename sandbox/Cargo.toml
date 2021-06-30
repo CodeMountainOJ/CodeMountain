@@ -1,5 +1,5 @@
 [package]
-name = "sandbox"
+name = "cmoj-sandbox-lib"
 version = "0.1.0"
 edition = "2018"
 authors = ["The CodeMountain Developers"]
@@ -10,3 +10,4 @@ authors = ["The CodeMountain Developers"]
 seccomp = "0.1"
 nix = "0.21.0"
 clap = "2.33.3"
+shlex = "1.0.0"
