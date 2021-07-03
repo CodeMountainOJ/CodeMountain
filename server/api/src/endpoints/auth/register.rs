@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web_validator::{ Json, };
+use actix_web_validator::Json;
 use actix_web::{ web::Json as actix_json, web::Data, Responder };
 use super::payload;
 use crate::errors;
@@ -25,10 +25,15 @@ use crate::db::Pool;
 use bcrypt::{hash, DEFAULT_COST};
 
 pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::RegisterRequest>) -> Result<impl Responder, errors::Errors> {
+    let req_firstname = req.firstname.trim_start().trim_end();
+    let req_lastname = req.lastname.trim_start().trim_end();
+    let req_username = req.username.trim_start().trim_end();
+    let req_email = req.email.as_str();
+
     let is_unique = is_unique(
-        &req.firstname,
-        &req.username,
-        &req.email,
+        req_firstname,
+        req_username,
+        req_email,
         conn_pool.as_ref()
     )?;
 
@@ -38,19 +43,14 @@ pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::Regi
 
     let salted_password = hash(&req.password, DEFAULT_COST).map_err(|_| errors::Errors::InternalServerError)?;
 
-    let user = create_user(
-        &req.firstname,
-        &req.lastname, 
-        &req.username, 
-        &req.email, 
+    create_user(
+        req_firstname,
+        req_lastname, 
+        req_username, 
+        req_email, 
         &salted_password,
         &conn_pool
-    );
-
-    match user {
-        Ok(_) => Ok(actix_json(payload::ReturnStatus {
-            success: true
-        })),
-        Err(e) => Err(e)
-    }
+    ).map_or_else(Err, |_| Ok(actix_json(payload::ReturnStatus {
+        success: true
+    })))
 }

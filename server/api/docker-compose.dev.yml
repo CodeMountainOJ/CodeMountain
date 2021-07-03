@@ -1,0 +1,18 @@
+services:
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - ./docker-helpers/dev/init.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+            - "5432:5432"
+    server:
+        build:
+            context: .
+            dockerfile: dockerfile.dev
+        ports:
+            - "8080:8080"
+        links: 
+            - postgres

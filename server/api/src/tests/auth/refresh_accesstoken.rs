@@ -26,7 +26,6 @@ static REFRESH_TOKEN: &'static str = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1a
 #[actix_rt::test]
 pub async fn refresh_accesstoken_ok() {
 
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
@@ -51,7 +50,6 @@ pub async fn refresh_accesstoken_ok() {
 #[actix_rt::test]
 pub async fn refresh_accesstoken_not_ok() {
 
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();

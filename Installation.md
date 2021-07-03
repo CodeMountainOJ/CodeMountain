@@ -59,13 +59,13 @@ fn main() {
 
 ### Installing all the required stuff
 
-First install and give the postgres user a password. Then create an empty database. If you want to test the server with ```cargo test``` make sure you make a db called ```codemountain_test```. Then, install Diesel Cli using ```cargo install diesel-cli```. Go to ```server/api``` and then run ```diesel migration run```. This will create all the required tables with columns. Make sure you put DATABASE_URL in env. It's gonna be an url like this:
+First install and give the postgres user a password. Then create an empty database. If you want to test the server with ```cargo test``` make sure you make a db called ```codemountain_test```. Then, install Diesel Cli using ```cargo install diesel_cli```. Go to ```server/api``` and then run ```diesel migration run```. This will create all the required tables with columns. Make sure you put DATABASE_URL in env. It's gonna be an url like this:
 
-```postgres://username@password:host/db_name```
+```postgres://username:password@host/db_name```
 
 In case of ```codemountain_test``` db where the username is postgres, password is postgres and the host is 127.0.0.1, the possible url is:
 
-```postgres://postgres@postgres:127.0.0.1/codemountain_test```
+```postgres://postgres:postgres@127.0.0.1/codemountain_test```
 
 After running migrations, insert a dummy user using the following SQL command:
 

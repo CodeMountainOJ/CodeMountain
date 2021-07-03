@@ -29,6 +29,11 @@ pub mod redis;
 #[cfg(test)]
 mod tests;
 
+use std::time::Duration;
+
+use actix_ratelimit::MemoryStore;
+use actix_ratelimit::MemoryStoreActor;
+use actix_ratelimit::RateLimiter;
 use actix_web::{web, App, HttpServer};
 use db::create_pool;
 use dotenv::dotenv;
@@ -43,6 +48,11 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .data(create_pool())
+            .wrap(RateLimiter::new(
+                MemoryStoreActor::from(MemoryStore::new()).start())
+                        .with_interval(Duration::from_secs(60))
+                        .with_max_requests(100)
+            )
             .route("/auth/login", web::post().to(auth::login::login_handler))
             .route(
                 "/auth/register",
@@ -69,7 +79,7 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(user::data_update::edit_lastname_handler),
             )
     })
-    .bind("localhost:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }

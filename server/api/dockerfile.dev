@@ -1,0 +1,24 @@
+FROM rust:latest
+
+WORKDIR /server
+COPY Cargo.toml .
+
+RUN mkdir src
+
+RUN echo "fn main() {}" > src/main.rs
+
+RUN cargo build
+
+RUN cargo install diesel_cli --no-default-features --features postgres
+
+RUN apt update
+
+RUN apt install postgresql -y
+
+COPY . .
+
+RUN cargo build
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "./docker-helpers/dev/wait-for-postgres.sh && diesel migration run && cargo run"]

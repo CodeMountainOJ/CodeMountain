@@ -1,6 +1,6 @@
 /*
 *  CodeMountain is a free and open source online judge open for everyone
-*  Copyright (C) 2021 Uthsob Chakra Borty and contributors
+*  Copyright (C) 2021 MD Gaziur Rahman Noor and contributors
 *
 *  This program is free software: you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
@@ -16,61 +16,59 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
-use crate::db::user::mutation::edit_lastname;
-use crate::endpoints::user::data_update::edit_lastname_handler;
-use crate::endpoints::user::payload::LastNamePayload;
+use crate::db::user::mutation::update_email;
+use crate::endpoints::user::data_update::edit_email_handler;
+use crate::endpoints::user::payload::EmailChangePayload;
 use actix_web::{test, web, App};
 use std::env::set_var;
 
 static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI1LCJleHAiOjk5OTk5OTk5OTksInRva2VuX3R5cGUiOiJBY2Nlc3NUb2tlbiJ9.iIBHQu2ZT4rsdTR_wCTITcCERhOgzGswSt5wWB3sWio";
 
 #[actix_rt::test]
-async fn test_edit_lastname_successful() {
+async fn test_edit_email_successful() {
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_lastname_handler)),
+            .route("/", web::post().to(edit_email_handler)),
     )
     .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&LastNamePayload {
-            lastname: "Dow".to_string(),
+        .set_json(&EmailChangePayload {
+            email: "john_doe@example.co".to_string(),
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
-    edit_lastname(25, &"Doe".to_string(), &pool)
+    update_email(25, &"john_doe@example.com".to_string(), &pool)
         .expect("Failed to revert the username");
 
     dbg!(resp.response());
     assert!(resp.status().is_success(), "This should be successful");
 }
 
-/// Lastnames doesn't require to be unique, that's why we are going to test if it accepts invalid
-/// lastnames or not
 #[actix_rt::test]
-async fn test_edit_lastname_unsuccessful() {
+async fn test_edit_email_unsuccessful() {
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_lastname_handler)),
+            .route("/", web::post().to(edit_email_handler)),
     )
     .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&LastNamePayload {
-            lastname: "Do".to_string(),
+        .set_json(&EmailChangePayload {
+            email: "john_doe@example.com".to_string(),
         })
         .to_request();
 

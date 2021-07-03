@@ -1,0 +1,26 @@
+FROM rust:latest
+
+WORKDIR /server
+COPY Cargo.toml .
+
+RUN mkdir src
+
+RUN echo "fn main() {}" > src/main.rs
+
+RUN cargo build
+
+RUN cargo install diesel_cli --no-default-features --features postgres
+
+RUN apt update
+
+RUN apt install postgresql -y
+
+COPY . .
+
+RUN cargo build
+
+EXPOSE 8080
+
+ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/codemountain_test
+
+CMD ["sh", "-c", "./docker-helpers/test/wait-for-postgres.sh && diesel migration run && psql ${DATABASE_URL} -f ./docker-helpers/test/insert_test_data.sql && cargo test"]

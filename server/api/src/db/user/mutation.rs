@@ -39,13 +39,10 @@ pub fn create_user<'a>(
         password: user_password,
     };
 
-    match diesel::insert_into(users)
+    diesel::insert_into(users)
         .values(&new_user)
         .get_result::<User>(&conn)
-    {
-        Ok(u) => Ok(u),
-        Err(_) => Err(Errors::InternalServerError),
-    }
+        .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
 
 pub fn edit_firstname(
@@ -55,13 +52,10 @@ pub fn edit_firstname(
 ) -> Result<User, Errors> {
     let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
-    match diesel::update(users.filter(id.eq(user_id)))
+    diesel::update(users.filter(id.eq(user_id)))
         .set(firstname.eq(user_firstname))
         .get_result::<User>(&conn)
-    {
-        Ok(u) => Ok(u),
-        Err(_) => Err(Errors::InternalServerError),
-    }
+        .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
 pub fn edit_lastname(
     user_id: i32,
@@ -70,13 +64,10 @@ pub fn edit_lastname(
 ) -> Result<User, Errors> {
     let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
-    match diesel::update(users.filter(id.eq(user_id)))
+    diesel::update(users.filter(id.eq(user_id)))
         .set(lastname.eq(user_lastname))
         .get_result::<User>(&conn)
-    {
-        Ok(u) => Ok(u),
-        Err(_) => Err(Errors::InternalServerError),
-    }
+        .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
 
 pub fn update_password(
@@ -86,10 +77,21 @@ pub fn update_password(
 ) -> Result<User, Errors> {
     let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
 
-    match diesel::update(users.filter(id.eq(user_id)))
+    diesel::update(users.filter(id.eq(user_id)))
         .set(password.eq(new_password))
-        .get_result::<User>(&conn) {
-            Ok(u) => Ok(u),
-            Err(_) => Err(Errors::InternalServerError)
-        }
+        .get_result::<User>(&conn)
+        .map_or_else(|_| Err(Errors::InternalServerError), Ok)
+}
+
+pub fn update_email(
+    user_id: i32,
+    new_email: &str,
+    conn_pool: &Pool
+) -> Result<User, Errors> {
+    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
+
+    diesel::update(users.filter(id.eq(user_id)))
+        .set(email.eq(new_email))
+        .get_result::<User>(&conn)
+        .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }

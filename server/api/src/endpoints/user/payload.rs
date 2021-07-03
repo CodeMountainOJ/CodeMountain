@@ -34,3 +34,9 @@ pub struct LastNamePayload {
 pub struct SuccessPayload {
     pub success: bool,
 }
+
+#[derive(Serialize, Deserialize, Validate)]
+pub struct EmailChangePayload {
+    #[validate(email)]
+    pub email: String
+}

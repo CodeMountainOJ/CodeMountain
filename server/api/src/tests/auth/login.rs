@@ -23,7 +23,6 @@ use std::env::set_var;
 
 #[actix_rt::test]
 async fn test_login_successful() {
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
@@ -48,7 +47,6 @@ async fn test_login_successful() {
 
 #[actix_rt::test]
 async fn test_login_failure() {
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();

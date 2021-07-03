@@ -23,7 +23,6 @@ use std::env::set_var;
 
 #[actix_rt::test]
 async fn test_register_unsuccessful() {
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
@@ -54,7 +53,6 @@ async fn test_register_successful() {
     use diesel::prelude::*;
     use crate::db::schema::users::dsl::*;
 
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
@@ -90,7 +88,6 @@ async fn test_register_successful() {
 
 #[actix_rt::test]
 async fn test_register_not_unique_data() {
-    set_var("DATABASE_URL", "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test");
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();

@@ -28,7 +28,9 @@ pub async fn login_handler(
     conn_pool: Data<Pool>,
     req: Json<LoginRequest>,
 ) -> Result<impl Responder, errors::Errors> {
-    let user = get_user_by_email(&req.email, conn_pool.as_ref())?;
+    let req_email = req.email.as_str();
+
+    let user = get_user_by_email(req_email, conn_pool.as_ref())?;
     let raw_password = req.password.clone();
     let salted_password = user.password;
 

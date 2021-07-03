@@ -26,10 +26,6 @@ static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ey
 
 #[actix_rt::test]
 async fn test_edit_firstname_successful() {
-    set_var(
-        "DATABASE_URL",
-        "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test",
-    );
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
@@ -59,10 +55,6 @@ async fn test_edit_firstname_successful() {
 
 #[actix_rt::test]
 async fn test_edit_firstname_unsuccessful() {
-    set_var(
-        "DATABASE_URL",
-        "postgres://postgres:a3b2c100@127.0.0.1/codemountain_test",
-    );
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
