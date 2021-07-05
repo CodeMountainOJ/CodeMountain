@@ -40,6 +40,11 @@ jobs:
       run: |
         sudo -u postgres psql -c "INSERT INTO users(id, firstname, lastname, username, email, password) VALUES (25, 'John', 'Doe', 'johndoe', 'john_doe@example.com', '\$2b\$12\$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti')" -d codemountain_test
         sudo -u postgres psql -c "select * from users;" -d codemountain_test
+    - name: Set up and run smtp-sink
+      run: |
+        DEBIAN_FRONTEND=noninteractive sudo apt install postfix -y
+        smtp-sink 2525 1000&
+    
     - name: Run tests
       run: |
         cd server/api
