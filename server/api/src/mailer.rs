@@ -16,12 +16,32 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use lettre::transport::smtp::{authentication::Credentials, Error};
-use lettre::{
-    message::MultiPart,
-    Message, SmtpTransport, Transport,
-};
+use lettre::{message::MultiPart, Message, SmtpTransport, Transport};
 
 pub fn mail(body: String, receiver: &str, subject: &str) -> Result<(), Error> {
+    if std::env::var("TEST_ENV").is_ok() {
+        // in a test environment
+        // we know that we need to send email to smtp-sink which is a black hole
+        let email = Message::builder()
+            .from("test_email@nobody".parse().unwrap())
+            .to(receiver.parse().unwrap())
+            .subject(subject)
+            .multipart(MultiPart::alternative_plain_html(body.clone(), body))
+            .unwrap();
+
+        let mailer = SmtpTransport::builder_dangerous("127.0.0.1")
+            .port(2525)
+            .build();
+
+        match mailer.send(&email) {
+            Ok(_) => return Ok(()),
+            Err(e) => {
+                dbg!("{}", &e);
+                return Err(e)
+            },
+        }
+    }
+
     let smtp_email = std::env::var("SMTP_EMAIL").unwrap();
     let smtp_password = std::env::var("SMTP_PASSWORD").unwrap();
     let smtp_server = std::env::var("SMTP_SERVER").unwrap();
@@ -30,8 +50,7 @@ pub fn mail(body: String, receiver: &str, subject: &str) -> Result<(), Error> {
         .from(smtp_email.parse().unwrap())
         .to(receiver.parse().unwrap())
         .subject(subject)
-        .multipart(MultiPart::alternative_plain_html(body.clone(), body)
-        )
+        .multipart(MultiPart::alternative_plain_html(body.clone(), body))
         .unwrap();
 
     let creds = Credentials::new(smtp_email, smtp_password);

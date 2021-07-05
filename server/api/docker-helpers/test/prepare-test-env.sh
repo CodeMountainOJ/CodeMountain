@@ -9,3 +9,5 @@ until psql ${DATABASE_URL} -c '\q'; do
 done
   
 >&2 echo "Postgres is up - executing command"
+
+smtp-sink -u postfix 2525 1000&

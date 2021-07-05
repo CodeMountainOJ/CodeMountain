@@ -15,6 +15,8 @@ RUN apt update
 
 RUN apt install postgresql -y
 
+RUN DEBIAN_FRONTEND=noninteractive apt install postfix -y
+
 COPY . .
 
 RUN cargo build
@@ -22,5 +24,6 @@ RUN cargo build
 EXPOSE 8080
 
 ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/codemountain_test
+ENV TEST_ENV=true
 
-CMD ["sh", "-c", "./docker-helpers/test/wait-for-postgres.sh && diesel migration run && psql ${DATABASE_URL} -f ./docker-helpers/test/insert_test_data.sql && cargo test"]
+CMD ["sh", "-c", "./docker-helpers/test/prepare-test-env.sh && diesel migration run && psql ${DATABASE_URL} -f ./docker-helpers/test/insert_test_data.sql && cargo test"]
