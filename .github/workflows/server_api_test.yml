@@ -9,6 +9,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   DATABASE_URL: postgres://postgres:a3b2c100@127.0.0.1/codemountain_test
+  TEST_ENV: true
 
 jobs:
   Test:
