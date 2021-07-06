@@ -1,6 +1,7 @@
 <p align="center">
-  ![CodeMountain Logo](branding/with-text.png)
+  <img alt="CodeMountain Logo" src="branding/with-text.png" />
 </p>
+
 ---
 
 <center>The free and opensource online judge for everyone</center>
