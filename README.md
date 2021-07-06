@@ -2,8 +2,10 @@
   <img alt="CodeMountain Logo" src="branding/with-text.png" />
 </p>
 
-![Sandbox Tests Status Badge](https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/sandbox_test.yml/badge.svg)
-![Server API Tests Status Badge](https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/server_api_test.yml/badge.svg)
+<p align="center">
+  <img alt="Sandbox Tests Status Badge" src="https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/sandbox_test.yml/badge.svg" />
+  <img alt="Server API Tests Status Badge" src="https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/server_api_test.yml/badge.svg" />
+</p>
 
 ## Why?
 
