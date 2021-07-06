@@ -2,12 +2,6 @@
   <img alt="CodeMountain Logo" src="branding/with-text.png" />
 </p>
 
----
-
-<center>The free and opensource online judge for everyone</center>
-
----
-
 ![Sandbox Tests Status Badge](https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/sandbox_test.yml/badge.svg)
 ![Server API Tests Status Badge](https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/server_api_test.yml/badge.svg)
 
