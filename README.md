@@ -1,5 +1,6 @@
-![CodeMountain Logo](branding/with-text.png)
-
+<p align="center">
+  ![CodeMountain Logo](branding/with-text.png)
+</p>
 ---
 
 <center>The free and opensource online judge for everyone</center>
