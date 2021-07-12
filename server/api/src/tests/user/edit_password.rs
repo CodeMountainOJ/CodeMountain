@@ -21,6 +21,7 @@ use crate::endpoints::user::data_update::edit_password_handler;
 use crate::endpoints::user::payload::PasswordUpdatePayload;
 use actix_web::{test, web, App};
 use std::env::set_var;
+use actix_web::body::{Body, ResponseBody};
 
 static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI1LCJleHAiOjk5OTk5OTk5OTksInRva2VuX3R5cGUiOiJBY2Nlc3NUb2tlbiJ9.iIBHQu2ZT4rsdTR_wCTITcCERhOgzGswSt5wWB3sWio";
 
@@ -39,12 +40,12 @@ async fn test_edit_password_successful() {
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
         .set_json(&PasswordUpdatePayload {
-            old_password: "a3b2c100".to_string(),
+            old_password: "password".to_string(),
             new_password: "aaaabbbb".to_string()
         })
         .to_request();
 
-    let resp = test::call_service(&mut app, req).await;
+    let mut resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
     update_password(25, &"$2b$12$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti".to_string(), &pool)
@@ -76,7 +77,7 @@ async fn test_edit_password_unsuccessful() {
 
     let resp = test::call_service(&mut app, req).await;
 
-    dbg!(resp.response().body().as_ref());
+    dbg!(resp.response());
     assert!(
         resp.status().is_client_error(),
         "This should be unsuccessful"
