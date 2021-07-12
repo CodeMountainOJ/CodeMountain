@@ -16,59 +16,61 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
-use crate::db::user::mutation::update_email;
-use crate::endpoints::user::data_update::edit_email_handler;
-use crate::endpoints::user::payload::EmailChangePayload;
+use crate::db::user::mutation::update_password;
+use crate::endpoints::user::data_update::edit_password_handler;
+use crate::endpoints::user::payload::PasswordUpdatePayload;
 use actix_web::{test, web, App};
 use std::env::set_var;
 
 static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI1LCJleHAiOjk5OTk5OTk5OTksInRva2VuX3R5cGUiOiJBY2Nlc3NUb2tlbiJ9.iIBHQu2ZT4rsdTR_wCTITcCERhOgzGswSt5wWB3sWio";
 
 #[actix_rt::test]
-async fn test_edit_email_successful() {
+async fn test_edit_password_successful() {
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_email_handler)),
+            .route("/", web::post().to(edit_password_handler)),
     )
-    .await;
+        .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&EmailChangePayload {
-            email: "john_doe@example.co".to_string(),
+        .set_json(&PasswordUpdatePayload {
+            old_password: "a3b2c100".to_string(),
+            new_password: "aaaabbbb".to_string()
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
-    update_email(25, &"john_doe@example.com".to_string(), &pool)
-        .expect("Failed to revert the email");
+    update_password(25, &"$2b$12$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti".to_string(), &pool)
+        .expect("Failed to revert the password");
 
     dbg!(resp.response());
     assert!(resp.status().is_success(), "This should be successful");
 }
 
 #[actix_rt::test]
-async fn test_edit_email_unsuccessful() {
+async fn test_edit_password_unsuccessful() {
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_email_handler)),
+            .route("/", web::post().to(edit_password_handler)),
     )
-    .await;
+        .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&EmailChangePayload {
-            email: "john_doe@example.com".to_string(),
+        .set_json(&PasswordUpdatePayload {
+            old_password: "a3b2c101".to_string(),
+            new_password: "aaaabbbb".to_string()
         })
         .to_request();
 

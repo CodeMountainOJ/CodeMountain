@@ -40,3 +40,12 @@ pub struct EmailChangePayload {
     #[validate(email)]
     pub email: String
 }
+
+#[derive(Serialize, Deserialize, Validate)]
+pub struct PasswordUpdatePayload {
+    #[validate(length(min = 8, max = 100))]
+    pub old_password: String,
+
+    #[validate(length(min = 8, max = 100))]
+    pub new_password: String
+}

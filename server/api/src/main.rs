@@ -78,6 +78,14 @@ async fn main() -> std::io::Result<()> {
                 "/user/update/lastname",
                 web::post().to(user::data_update::edit_lastname_handler),
             )
+            .route(
+                "/user/update/email",
+                web::post().to(user::data_update::edit_email_handler)
+            )
+            .route(
+                "/user/update/password",
+                web::post().to(user::data_update::edit_password_handler)
+            )
     })
     .bind("0.0.0.0:8080")?
     .run()

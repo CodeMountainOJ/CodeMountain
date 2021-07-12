@@ -25,6 +25,9 @@ use crate::errors::Errors;
 use crate::guards::auth::AuthRequired;
 use actix_web::{web::Data, web::Json as actix_json, Responder};
 use actix_web_validator::Json;
+use crate::endpoints::user::payload::PasswordUpdatePayload;
+use bcrypt::{verify, hash, DEFAULT_COST};
+use crate::db::user::mutation::update_password;
 
 pub async fn edit_firstname_handler(
     conn_pool: Data<Pool>,
@@ -75,4 +78,33 @@ pub async fn edit_email_handler(
         .map(|_| actix_json(SuccessPayload {
             success: true
         }))
+}
+
+pub async fn edit_password_handler(
+    conn_pool: Data<Pool>,
+    user: AuthRequired,
+    req: Json<PasswordUpdatePayload>
+) -> Result<impl Responder, Errors> {
+    let user_id = user.user.id;
+    let user_password = user.user.password;
+    let new_password = req.new_password.clone();
+    let old_password = req.old_password.clone();
+
+    // check if old password is correct
+    let is_correct_password = verify(old_password, &user_password)
+        .map_err(|_| Errors::InternalServerError)?;
+
+    if !is_correct_password {
+        return Err(Errors::BadRequest("Wrong Password!"));
+    }
+
+    let new_salted_password = hash(new_password, DEFAULT_COST)
+        .map_err(|_| Errors::InternalServerError)?;
+
+    update_password(user_id, &new_salted_password, &conn_pool)
+        .map(|_| {
+            actix_json(SuccessPayload {
+                success: true
+            })
+        })
 }
