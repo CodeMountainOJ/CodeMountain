@@ -76,7 +76,7 @@ async fn test_edit_password_unsuccessful() {
 
     let resp = test::call_service(&mut app, req).await;
 
-    dbg!(resp.response());
+    dbg!(resp.response().body().as_ref());
     assert!(
         resp.status().is_client_error(),
         "This should be unsuccessful"
