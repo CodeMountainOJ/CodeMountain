@@ -3,7 +3,7 @@
 This guide shows how to set up the servers and compile the sandbox for testing or running in local/server.
 
 ---
-**Warning: None of the servers are ready for what they are actually supposed to do. They are being developed. This manual will be updated later when the development of the first version is done.**
+**Warning: None of the servers are ready for what they are actually supposed to do. They are being developed. This manual will be updated later when the development of the first version is finished.**
 
 ## Compiling The Sandbox
 
@@ -48,32 +48,33 @@ fn main() {
 }
 ```
 
-**Imporant note: Make sure you run the sandbox or the rust program running the sandbox as root. Otherwise it will fail. To prevent that, the sandbox will exit without doing anything. It'll simply write an error inside the log file called "ENTRYPOINT_LOG.log"**
+**Important note: Make sure you run the sandbox, or the rust program running the sandbox as root. Otherwise, it will fail. To prevent that, the sandbox will exit without doing anything. It'll simply write an error inside the log file called "ENTRYPOINT_LOG.log"**
 
 ## Getting The API Server Up And Running
+This guide will tell you how to test and run the server on your system without installing or having the hassle of setting up various stuff.
 
 ### Requirements
+- Docker
+- Docker Compose
 
-- Latest version of Rust
-- Latest version of Postgresql
-
-### Installing all the required stuff
-
-First install and give the postgres user a password. Then create an empty database. If you want to test the server with ```cargo test``` make sure you make a db called ```codemountain_test```. Then, install Diesel Cli using ```cargo install diesel_cli```. Go to ```server/api``` and then run ```diesel migration run```. This will create all the required tables with columns. Make sure you put DATABASE_URL in env. It's gonna be an url like this:
-
-```postgres://username:password@host/db_name```
-
-In case of ```codemountain_test``` db where the username is postgres, password is postgres and the host is 127.0.0.1, the possible url is:
-
-```postgres://postgres:postgres@127.0.0.1/codemountain_test```
-
-After running migrations, insert a dummy user using the following SQL command:
-
-```sql
-INSERT INTO users(id, firstname, lastname, username, email, password) VALUES (25, 'John', 'Doe', 'johndoe', 'john_doe@example.com', '$2b$12$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti')
+### Testing(No setup needed)
+```shell
+docker-compose -f docker-compose.test.yml rm && docker-compose -f docker-compose.test.yml build && docker-compose -f docker-compose.test.yml up
 ```
+### Running(Dev environment)
+You need to set some environment variables before running the server;
 
-Make sure you are inserting the user into the ```codemountain_test``` database. This will add an user with john_doe@example.com as the email and "password" as the password. Compile the api server using ```cargo build```. To make a release binary, run ```cargo build --release```. Set the environment variables ```DATABASE_URL``` and ```JWT_SECRET_KEY``` in the env or store in a ```.env``` file inside the project directory(```server/api```). Here, ```DATABASE_URL``` should be the connection url for the db and ```JWT_SECRET_KEY``` is the secret key used to sign the access/refreshtokens. Then execute it ```cargo run``` for debug build and ```cargo run --release``` for release build. If you want to run local tests, then run ```cargo test```.
-And finally, you should set the REDIS_CON env variable inside the .env or directly in the environment. But, here's a catch. It doesn't do anything right now, so you can set any value into that variable. It'll be relevent in future.
-
-Endpoints of the API are in the server/api/main.rs. API documentation will be created later.
+- REDIS_CON: Not used right now. Set anything random
+- SMTP_EMAIL: Email to log in to SMTP server
+- SMTP_PASSWORD: Password to log in to SMTP server
+- SMTP_SERVER: SMTP server address
+- JWT_SECRET_KEY: A random secret key for signing JSON web tokens
+- DATABASE_URL: Can be a database server you set up, or the server that comes with the dockerfile. To use the server(database is not persistent),
+  use this: `postgres://postgres:postgres@postgres:5432/codemountain_dev`
+  
+Now you can run this to start the server:
+```shell
+docker-compose -f docker-compose.dev.yml rm && docker-compose -f docker-compose.dev.yml build && docker-compose -f docker-compose.dev.yml up
+```
+## Note
+If you find any issue in this doc, please create an issue in this repo.
