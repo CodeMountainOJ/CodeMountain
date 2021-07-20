@@ -1,5 +1,7 @@
 FROM rust:latest
 
+ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/codemountain_dev
+
 WORKDIR /server
 COPY Cargo.toml .
 

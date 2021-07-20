@@ -49,3 +49,8 @@ pub struct PasswordUpdatePayload {
     #[validate(length(min = 8, max = 100))]
     pub new_password: String
 }
+
+#[derive(Serialize, Deserialize, Validate)]
+pub struct GetUserByIdPayload {
+    pub id: i32
+}

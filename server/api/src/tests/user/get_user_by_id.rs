@@ -17,38 +17,33 @@
 */
 use crate::db::create_pool;
 use crate::db::user::mutation::update_password;
-use crate::endpoints::user::data_update::edit_password_handler;
-use crate::endpoints::user::payload::PasswordUpdatePayload;
+use crate::endpoints::user::payload::GetUserByIdPayload;
 use actix_web::{test, web, App};
 use std::env::set_var;
+use crate::endpoints::user::data_query::get_user_by_id_handler;
 
 static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI1LCJleHAiOjk5OTk5OTk5OTksInRva2VuX3R5cGUiOiJBY2Nlc3NUb2tlbiJ9.iIBHQu2ZT4rsdTR_wCTITcCERhOgzGswSt5wWB3sWio";
 
 #[actix_rt::test]
-async fn test_edit_password_successful() {
+async fn test_get_user_by_id_successful() {
     set_var("JWT_SECRET_KEY", "beryberysecret");
 
     let pool = create_pool();
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_password_handler)),
+            .route("/", web::post().to(get_user_by_id_handler)),
     )
         .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&PasswordUpdatePayload {
-            old_password: "password".to_string(),
-            new_password: "aaaabbbb".to_string()
+        .set_json(&GetUserByIdPayload {
+            id: 25
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
-
-    // revert the change because we'll need the value to be the previous one
-    update_password(25, &"$2b$12$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti".to_string(), &pool)
-        .expect("Failed to revert the password");
 
     dbg!(resp.response());
     assert!(resp.status().is_success(), "This should be successful");
@@ -62,15 +57,14 @@ async fn test_edit_password_unsuccessful() {
     let mut app = test::init_service(
         App::new()
             .data(pool.clone())
-            .route("/", web::post().to(edit_password_handler)),
+            .route("/", web::post().to(get_user_by_id_handler)),
     )
         .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&PasswordUpdatePayload {
-            old_password: "a3b2c101".to_string(),
-            new_password: "aaaabbbb".to_string()
+        .set_json(&GetUserByIdPayload {
+            id: 1
         })
         .to_request();
 

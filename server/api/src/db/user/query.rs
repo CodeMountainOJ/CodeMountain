@@ -28,11 +28,10 @@ pub fn get_user_by_uid(
     let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
     
     let results = users
-        .filter(id.eq_all(user_id))
+        .filter(id.eq(user_id))
         .limit(5)
         .load::<User>(&conn)
         .map_err(|_| Errors::InternalServerError)?;
-    
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
