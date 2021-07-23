@@ -25,7 +25,7 @@ pub fn get_user_by_uid(
     user_id: &i32,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
+    let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
     
     let results = users
         .filter(id.eq(user_id))
@@ -44,7 +44,7 @@ pub fn get_user_by_email(
     user_email: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
+    let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
     
     let results = users
         .filter(email.like(user_email))
@@ -63,7 +63,7 @@ pub fn get_user_by_firstname(
     user_firstname: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
+    let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
     
     let results = users
         .filter(firstname.like(user_firstname))
@@ -83,7 +83,7 @@ pub fn get_user_by_lastname(
     user_lastname: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
+    let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
     
     let results = users
         .filter(lastname.like(user_lastname))
@@ -103,7 +103,7 @@ pub fn get_user_by_username(
     user_username: &str,
     conn_pool: &Pool,
 ) -> Result<User, Errors> {
-    let conn = get_conn(&conn_pool).map_err(|_| Errors::InternalServerError)?;
+    let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
     
     let results = users
         .filter(username.like(user_username))
@@ -125,21 +125,21 @@ pub fn is_unique(
     user_email: &str,
     conn_pool: &Pool,
 ) -> Result<bool, Errors> {
-    match get_user_by_firstname(user_firstname, &conn_pool) {
+    match get_user_by_firstname(user_firstname, conn_pool) {
         Ok(_) => return Ok(false),
         Err(e) => if let Errors::InternalServerError = e {
             return Err(Errors::InternalServerError)
         },
     };
 
-    match get_user_by_username(user_username, &conn_pool) {
+    match get_user_by_username(user_username, conn_pool) {
         Ok(_) => return Ok(false),
         Err(e) => if let Errors::InternalServerError = e {
             return Err(Errors::InternalServerError)
         },
     };
 
-    match get_user_by_email(user_email, &conn_pool) {
+    match get_user_by_email(user_email, conn_pool) {
         Ok(_) => return Ok(false),
         Err(e) => if let Errors::InternalServerError = e {
             return Err(Errors::InternalServerError)

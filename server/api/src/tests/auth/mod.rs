@@ -19,3 +19,4 @@ pub mod login;
 pub mod register;
 pub mod refresh_accesstoken;
 pub mod recovery;
+pub mod authstatus;

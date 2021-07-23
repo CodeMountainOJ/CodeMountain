@@ -38,11 +38,11 @@ pub async fn edit_firstname_handler(
     let new_firstname = req.firstname.trim_end().trim_start();
 
     // check if new firstname is unique
-    if get_user_by_firstname(&new_firstname, conn_pool.as_ref()).is_ok() {
+    if get_user_by_firstname(new_firstname, conn_pool.as_ref()).is_ok() {
         return Err(Errors::BadRequest("Firstname is not unique!"))
     }
 
-    edit_firstname(user_id, &new_firstname, conn_pool.as_ref())
+    edit_firstname(user_id, new_firstname, conn_pool.as_ref())
         .map(|_| actix_json(SuccessPayload {
             success: true
         }))
@@ -55,7 +55,7 @@ pub async fn edit_lastname_handler(
     let user_id = user.user.id;
     let new_lastname = req.lastname.trim_end().trim_start();
 
-    edit_lastname(user_id, &new_lastname, conn_pool.as_ref())
+    edit_lastname(user_id, new_lastname, conn_pool.as_ref())
         .map(|_| actix_json(SuccessPayload {
             success: true
         }))

@@ -17,6 +17,7 @@
  */
 use validator::Validate;
 use serde::{ Deserialize, Serialize };
+use crate::db::user::model::User;
 
 #[derive(Deserialize, Serialize, Validate)]
 pub struct LoginRequest {
@@ -74,4 +75,9 @@ pub struct ResetPasswordPayload {
     pub reset_token: String,
     #[validate(length(min = 8, max = 100))]
     pub password: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AuthStatusUserReturnPayload {
+    pub user: User
 }

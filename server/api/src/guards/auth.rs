@@ -50,7 +50,7 @@ impl FromRequest for AuthRequired {
         }
 
         let raw_token = split_token[1];
-        let token = match verify_token(&raw_token) {
+        let token = match verify_token(raw_token) {
             Ok(t) => t,
             Err(_) => return err(Errors::AccessForbidden)
         };

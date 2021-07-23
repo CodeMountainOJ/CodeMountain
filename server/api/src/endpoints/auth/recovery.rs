@@ -54,7 +54,7 @@ pub async fn send_password_reset_email(
     let user_email = payload.email.clone();
 
     // check if the user exists
-    let user = get_user_by_email(&user_email, &conn_pool.as_ref())?;
+    let user = get_user_by_email(&user_email, &conn_pool)?;
 
     let reset_token = generate_passwordresettoken(&user.id, &(jwt_secret_key + &user.password))
         .map_err(|_| Errors::InternalServerError)?;
@@ -89,7 +89,7 @@ pub async fn recover_password(
     let new_password = payload.password.clone();
 
     let token_data = decode_without_secret(&token).map_err(|_| Errors::InternalServerError)?;
-    let user = get_user_by_uid(&token_data.uid, &conn_pool.as_ref())?;
+    let user = get_user_by_uid(&token_data.uid, &conn_pool)?;
 
     verify_token_using_custom_secret(&token, &(jwt_secret_key + &user.password))
         .map_err(|_| Errors::BadRequest("Invalid reset token"))?;
@@ -99,11 +99,11 @@ pub async fn recover_password(
         _ => return Err(Errors::BadRequest("Invalid reset token")),
     }
 
-    let user = get_user_by_uid(&token_data.uid, &conn_pool.as_ref())?;
+    let user = get_user_by_uid(&token_data.uid, &conn_pool)?;
 
     let salted_password = hash(&new_password, DEFAULT_COST).map_err(|_| Errors::InternalServerError)?;
 
-    match update_password(user.id, &salted_password, &conn_pool.as_ref()) {
+    match update_password(user.id, &salted_password, &conn_pool) {
         Ok(_) => Ok(actix_json(ReturnStatus { success: true })),
         Err(e) => Err(e),
     }

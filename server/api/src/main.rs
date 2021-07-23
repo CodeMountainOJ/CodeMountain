@@ -71,6 +71,10 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(auth::recovery::recover_password)
             )
             .route(
+                "/auth/status",
+                web::post().to(auth::authstatus::check_auth_status_handler)
+            )
+            .route(
                 "/user/update/firstname",
                 web::post().to(user::data_update::edit_firstname_handler),
             )
