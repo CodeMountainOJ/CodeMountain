@@ -94,6 +94,10 @@ async fn main() -> std::io::Result<()> {
                 "/user/query/id",
                 web::post().to(user::data_query::get_user_by_id_handler)
             )
+            .route(
+                "/user/query/username",
+                web::post().to(user::data_query::get_user_by_username_handler)
+            )
     })
     .bind("0.0.0.0:8080")?
     .run()

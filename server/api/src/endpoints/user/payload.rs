@@ -54,3 +54,8 @@ pub struct PasswordUpdatePayload {
 pub struct GetUserByIdPayload {
     pub id: i32
 }
+
+#[derive(Serialize, Deserialize, Validate)]
+pub struct GetUserByUsernamePayload {
+    pub username: String
+}
