@@ -53,51 +53,67 @@ async fn main() -> std::io::Result<()> {
                         .with_interval(Duration::from_secs(60))
                         .with_max_requests(100)
             )
-            .route("/auth/login", web::post().to(auth::login::login_handler))
-            .route(
-                "/auth/register",
-                web::post().to(auth::register::registration_handler),
-            )
-            .route(
-                "/auth/token/refresh",
-                web::post().to(auth::refresh_accesstoken::refresh_accesstoken_handler),
-            )
-            .route(
-                "/auth/get/passwordresettoken",
-                web::post().to(auth::recovery::send_password_reset_email)
-            )
-            .route(
-                "/auth/reset/password",
-                web::post().to(auth::recovery::recover_password)
-            )
-            .route(
-                "/auth/status",
-                web::post().to(auth::authstatus::check_auth_status_handler)
-            )
-            .route(
-                "/user/update/firstname",
-                web::post().to(user::data_update::edit_firstname_handler),
-            )
-            .route(
-                "/user/update/lastname",
-                web::post().to(user::data_update::edit_lastname_handler),
-            )
-            .route(
-                "/user/update/email",
-                web::post().to(user::data_update::edit_email_handler)
-            )
-            .route(
-                "/user/update/password",
-                web::post().to(user::data_update::edit_password_handler)
-            )
-            .route(
-                "/user/query/id",
-                web::post().to(user::data_query::get_user_by_id_handler)
-            )
-            .route(
-                "/user/query/username",
-                web::post().to(user::data_query::get_user_by_username_handler)
-            )
+            .service( // Start of "/auth" prefix
+                web::scope("/auth")
+                    .route(
+                        "/login", 
+                        web::post().to(auth::login::login_handler),
+                    )
+                    .route(
+                        "/register",
+                        web::post().to(auth::register::registration_handler),
+                    )
+                    .route(
+                        "/token/refresh",
+                        web::post().to(auth::refresh_accesstoken::refresh_accesstoken_handler),
+                    )
+                    .route(
+                        "/get/passwordresettoken",
+                        web::post().to(auth::recovery::send_password_reset_email)
+                    )
+                    .route(
+                        "/reset/password",
+                        web::post().to(auth::recovery::recover_password)
+                    )
+                    .route(
+                        "/status",
+                        web::post().to(auth::authstatus::check_auth_status_handler)
+                    )
+
+            ) // End of "/auth" prefix
+            .service( // Start of "/user" prefix
+                web::scope("/user")
+                    .servce( // Start of "/user/update" prefix
+                        web::scope("/update") 
+                        .route(
+                            "/firstname",
+                            web::post().to(user::data_update::edit_firstname_handler),
+                        )
+                        .route(
+                            "/lastname",
+                            web::post().to(user::data_update::edit_lastname_handler),
+                        )
+                        .route(
+                            "/email",
+                            web::post().to(user::data_update::edit_email_handler)
+                        )
+                        .route(
+                            "/password",
+                            web::post().to(user::data_update::edit_password_handler)
+                        )
+                    ) // End of "/user/update" prefix
+                    .server( // Start of "/user/query" prefix
+                        web::scope("/query")
+                        .route(
+                            "/id",
+                            web::post().to(user::data_query::get_user_by_id_handler)
+                        )
+                        .route(
+                            "/username",
+                            web::post().to(user::data_query::get_user_by_username_handler)
+                        )
+                    ) // End of "/user/update" prefix
+            ) // End of "/user" prefix
     })
     .bind("0.0.0.0:8080")?
     .run()
