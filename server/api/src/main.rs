@@ -69,15 +69,15 @@ async fn main() -> std::io::Result<()> {
                     )
                     .route(
                         "/get/passwordresettoken",
-                        web::post().to(auth::recovery::send_password_reset_email)
+                        web::post().to(auth::recovery::send_password_reset_email),
                     )
                     .route(
                         "/reset/password",
-                        web::post().to(auth::recovery::recover_password)
+                        web::post().to(auth::recovery::recover_password),
                     )
                     .route(
                         "/status",
-                        web::post().to(auth::authstatus::check_auth_status_handler)
+                        web::post().to(auth::authstatus::check_auth_status_handler),
                     )
 
             ) // End of "/auth" prefix
@@ -95,22 +95,22 @@ async fn main() -> std::io::Result<()> {
                         )
                         .route(
                             "/email",
-                            web::post().to(user::data_update::edit_email_handler)
+                            web::post().to(user::data_update::edit_email_handler),
                         )
                         .route(
                             "/password",
-                            web::post().to(user::data_update::edit_password_handler)
+                            web::post().to(user::data_update::edit_password_handler),
                         )
                     ) // End of "/user/update" prefix
                     .server( // Start of "/user/query" prefix
                         web::scope("/query")
                         .route(
                             "/id",
-                            web::post().to(user::data_query::get_user_by_id_handler)
+                            web::post().to(user::data_query::get_user_by_id_handler),
                         )
                         .route(
                             "/username",
-                            web::post().to(user::data_query::get_user_by_username_handler)
+                            web::post().to(user::data_query::get_user_by_username_handler),
                         )
                     ) // End of "/user/query" prefix
             ) // End of "/user" prefix
