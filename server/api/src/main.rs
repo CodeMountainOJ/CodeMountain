@@ -83,7 +83,7 @@ async fn main() -> std::io::Result<()> {
             ) // End of "/auth" prefix
             .service( // Start of "/user" prefix
                 web::scope("/user")
-                    .servce( // Start of "/user/update" prefix
+                    .service( // Start of "/user/update" prefix
                         web::scope("/update") 
                         .route(
                             "/firstname",
@@ -102,7 +102,7 @@ async fn main() -> std::io::Result<()> {
                             web::post().to(user::data_update::edit_password_handler),
                         )
                     ) // End of "/user/update" prefix
-                    .server( // Start of "/user/query" prefix
+                    .service( // Start of "/user/query" prefix
                         web::scope("/query")
                         .route(
                             "/id",
