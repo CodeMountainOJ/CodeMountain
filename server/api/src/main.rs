@@ -112,7 +112,7 @@ async fn main() -> std::io::Result<()> {
                             "/username",
                             web::post().to(user::data_query::get_user_by_username_handler)
                         )
-                    ) // End of "/user/update" prefix
+                    ) // End of "/user/query" prefix
             ) // End of "/user" prefix
     })
     .bind("0.0.0.0:8080")?
