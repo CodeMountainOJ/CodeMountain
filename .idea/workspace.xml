@@ -10,21 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fc7d0f3b-2da1-45d6-b3c6-29daf9c3b3e1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/CodeMountain.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/api/src/endpoints/user/avatar_update.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/api/src/image_validation.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/docker-compose.dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/docker-compose.dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/src/db/user/mutation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/src/db/user/mutation.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/src/endpoints/user/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/src/endpoints/user/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/src/endpoints/user/payload.rs" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/src/endpoints/user/payload.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/src/env.rs" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/src/env.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/api/src/image_validation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/src/image_validation.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,11 +35,15 @@
     <option name="directoryName" value="fiii9fdg" />
   </component>
   <component name="ProjectId" id="1vwahKIVQKnDz42vobyT1Z8IAZZ" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -94,7 +85,7 @@
       <workItem from="1627476195073" duration="249000" />
       <workItem from="1627477964737" duration="4939000" />
       <workItem from="1627520935168" duration="519000" />
-      <workItem from="1627521821742" duration="12949000" />
+      <workItem from="1627521821742" duration="13418000" />
     </task>
     <servers />
   </component>
@@ -112,5 +103,8 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>
