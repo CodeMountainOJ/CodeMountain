@@ -24,4 +24,5 @@ pub fn do_env_check() {
     var("SMTP_SERVER").expect("SMTP_SERVER is not set");
     var("JWT_SECRET_KEY").expect("JWT_SECRET_KEY is not set");
     var("DATABASE_URL").expect("DATABASE_URL is not set");
+    var("USER_SUBMITTED_FILE_PATH").expect("USER_SUBMITTED_FILE_PATH is not set");
 }

@@ -59,3 +59,8 @@ pub struct GetUserByIdPayload {
 pub struct GetUserByUsernamePayload {
     pub username: String
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct ReturnPayloadUpdateAvatar {
+    pub new_avatar: String
+}

@@ -95,3 +95,16 @@ pub fn update_email(
         .get_result::<User>(&conn)
         .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
+
+pub fn update_avatar(
+    user_id: i32,
+    new_avatar: &str,
+    conn_pool: &Pool
+) -> Result<User, Errors> {
+    let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
+
+    diesel::update(users.filter(id.eq(user_id)))
+        .set(avatar.eq(new_avatar))
+        .get_result::<User>(&conn)
+        .map_or_else(|_| Err(Errors::InternalServerError), Ok)
+}

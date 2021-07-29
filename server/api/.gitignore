@@ -11,3 +11,5 @@ Cargo.lock
 
 # Secret environment variables! SHHHHHH
 .env
+
+avatars

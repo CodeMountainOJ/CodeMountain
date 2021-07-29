@@ -25,6 +25,7 @@ pub mod guards;
 pub mod jwt;
 pub mod mailer;
 pub mod redis;
+pub mod image_validation;
 
 #[cfg(test)]
 mod tests;
@@ -100,6 +101,10 @@ async fn main() -> std::io::Result<()> {
                         .route(
                             "/password",
                             web::post().to(user::data_update::edit_password_handler),
+                        )
+                        .route(
+                            "/avatar",
+                            web::post().to(user::avatar_update::update_avatar_handler)
                         )
                     ) // End of "/user/update" prefix
                     .service( // Start of "/user/query" prefix
