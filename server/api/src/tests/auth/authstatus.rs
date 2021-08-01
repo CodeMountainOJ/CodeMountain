@@ -16,8 +16,7 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
-use crate::endpoints::auth::authstatus::check_auth_status_handler;
-use crate::endpoints::user::payload::EmailChangePayload;
+use crate::endpoints::auth::authstatus::check_auth_status_handler
 use actix_web::{test, web, App};
 use std::env::set_var;
 

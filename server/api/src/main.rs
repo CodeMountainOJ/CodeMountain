@@ -35,11 +35,15 @@ use std::time::Duration;
 use actix_ratelimit::MemoryStore;
 use actix_ratelimit::MemoryStoreActor;
 use actix_ratelimit::RateLimiter;
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpServer, Responder};
 use db::create_pool;
 use dotenv::dotenv;
 use endpoints::auth;
 use endpoints::user;
+
+async fn health() -> impl Responder {
+    "CodeMountainOJ-API Sample Route"
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -54,6 +58,7 @@ async fn main() -> std::io::Result<()> {
                         .with_interval(Duration::from_secs(60))
                         .with_max_requests(100)
             )
+            .route("/health", web::post().to(health))
             .service( // Start of "/auth" prefix
                 web::scope("/auth")
                     .route(

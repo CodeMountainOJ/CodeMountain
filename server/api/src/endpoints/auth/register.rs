@@ -22,7 +22,7 @@ use crate::errors;
 use crate::db::user::query::is_unique;
 use crate::db::user::mutation::create_user;
 use crate::db::Pool;
-use bcrypt::{hash, DEFAULT_COST};
+use bcrypt::hash;
 
 pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::RegisterRequest>) -> Result<impl Responder, errors::Errors> {
     let req_firstname = req.firstname.trim_start().trim_end();
@@ -41,7 +41,7 @@ pub async fn registration_handler(conn_pool: Data<Pool>, req: Json<payload::Regi
         return Err(errors::Errors::BadRequest("Some user data is not unique"));
     }
 
-    let salted_password = hash(&req.password, DEFAULT_COST).map_err(|_| errors::Errors::InternalServerError)?;
+    let salted_password = hash(&req.password, 7).map_err(|_| errors::Errors::InternalServerError)?;
 
     create_user(
         req_firstname,

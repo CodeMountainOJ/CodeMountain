@@ -13,3 +13,5 @@ Cargo.lock
 .env
 
 avatars
+
+**/workspace.xml

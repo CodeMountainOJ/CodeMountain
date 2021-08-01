@@ -1,9 +1,14 @@
 FROM rust:latest
 
 WORKDIR /server
-COPY Cargo.toml .
 
-RUN mkdir src
+COPY ./docker-helpers ./docker-helpers
+COPY ./migrations ./migrations
+COPY ./Cargo.lock ./
+COPY ./Cargo.toml ./
+COPY ./diesel.toml ./
+
+RUN mkdir ./src
 
 RUN echo "fn main() {}" > src/main.rs
 
@@ -17,11 +22,11 @@ RUN apt install postgresql -y
 
 RUN DEBIAN_FRONTEND=noninteractive apt install postfix -y
 
-COPY . .
+RUN USER=root rm -rf ./src/*.rs
 
-RUN cargo build
+COPY ./email_templates ./email_templates
 
-EXPOSE 8080
+COPY ./src ./src
 
 ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/codemountain_test
 ENV TEST_ENV=true

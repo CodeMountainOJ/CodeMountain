@@ -16,7 +16,6 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
-use crate::db::user::mutation::update_password;
 use crate::endpoints::user::payload::GetUserByIdPayload;
 use actix_web::{test, web, App};
 use std::env::set_var;

@@ -15,17 +15,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 use actix_multipart::Multipart;
 use actix_web::Responder;
 use crate::errors::Errors;
 use crate::guards::auth::AuthRequired;
-use actix_web::web::Buf;
 use futures_util::{StreamExt, TryStreamExt};
 use crate::image_validation::validate_img;
 use actix_web::web::Json;
 use crate::endpoints::user::payload::ReturnPayloadUpdateAvatar;
 use std::io::Write;
-use actix_web::dev::Service;
 use crate::db::user::mutation::update_avatar;
 use crate::db::Pool;
 
@@ -74,8 +73,7 @@ pub async fn update_avatar_handler(
     };
 
     // try removing the previous avatar and replacing it with the new one :^)
-    #[allow(unused_must_use)]
-    std::fs::remove_file(std::path::Path::new(&std::env::var("USER_SUBMITTED_FILE_PATH").unwrap())
+    let _ =std::fs::remove_file(std::path::Path::new(&std::env::var("USER_SUBMITTED_FILE_PATH").unwrap())
         .join(&user.user.avatar));
 
     update_avatar(user_id, &filename, &conn_pool)?;
