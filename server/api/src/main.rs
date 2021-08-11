@@ -22,10 +22,10 @@ pub mod endpoints;
 pub mod env;
 pub mod errors;
 pub mod guards;
+pub mod image_validation;
 pub mod jwt;
 pub mod mailer;
 pub mod redis;
-pub mod image_validation;
 
 #[cfg(test)]
 mod tests;
@@ -53,18 +53,16 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .data(create_pool())
-            .wrap(RateLimiter::new(
-                MemoryStoreActor::from(MemoryStore::new()).start())
-                        .with_interval(Duration::from_secs(60))
-                        .with_max_requests(100)
+            .wrap(
+                RateLimiter::new(MemoryStoreActor::from(MemoryStore::new()).start())
+                    .with_interval(Duration::from_secs(60))
+                    .with_max_requests(100),
             )
             .route("/health", web::post().to(health))
-            .service( // Start of "/auth" prefix
+            .service(
+                // Start of "/auth" prefix
                 web::scope("/auth")
-                    .route(
-                        "/login", 
-                        web::post().to(auth::login::login_handler),
-                    )
+                    .route("/login", web::post().to(auth::login::login_handler))
                     .route(
                         "/register",
                         web::post().to(auth::register::registration_handler),
@@ -84,45 +82,47 @@ async fn main() -> std::io::Result<()> {
                     .route(
                         "/status",
                         web::post().to(auth::authstatus::check_auth_status_handler),
-                    )
-
+                    ),
             ) // End of "/auth" prefix
-            .service( // Start of "/user" prefix
+            .service(
+                // Start of "/user" prefix
                 web::scope("/user")
-                    .service( // Start of "/user/update" prefix
-                        web::scope("/update") 
-                        .route(
-                            "/firstname",
-                            web::post().to(user::data_update::edit_firstname_handler),
-                        )
-                        .route(
-                            "/lastname",
-                            web::post().to(user::data_update::edit_lastname_handler),
-                        )
-                        .route(
-                            "/email",
-                            web::post().to(user::data_update::edit_email_handler),
-                        )
-                        .route(
-                            "/password",
-                            web::post().to(user::data_update::edit_password_handler),
-                        )
-                        .route(
-                            "/avatar",
-                            web::post().to(user::avatar_update::update_avatar_handler)
-                        )
+                    .service(
+                        // Start of "/user/update" prefix
+                        web::scope("/update")
+                            .route(
+                                "/firstname",
+                                web::post().to(user::data_update::edit_firstname_handler),
+                            )
+                            .route(
+                                "/lastname",
+                                web::post().to(user::data_update::edit_lastname_handler),
+                            )
+                            .route(
+                                "/email",
+                                web::post().to(user::data_update::edit_email_handler),
+                            )
+                            .route(
+                                "/password",
+                                web::post().to(user::data_update::edit_password_handler),
+                            )
+                            .route(
+                                "/avatar",
+                                web::post().to(user::avatar_update::update_avatar_handler),
+                            ),
                     ) // End of "/user/update" prefix
-                    .service( // Start of "/user/query" prefix
+                    .service(
+                        // Start of "/user/query" prefix
                         web::scope("/query")
-                        .route(
-                            "/id",
-                            web::post().to(user::data_query::get_user_by_id_handler),
-                        )
-                        .route(
-                            "/username",
-                            web::post().to(user::data_query::get_user_by_username_handler),
-                        )
-                    ) // End of "/user/query" prefix
+                            .route(
+                                "/id",
+                                web::post().to(user::data_query::get_user_by_id_handler),
+                            )
+                            .route(
+                                "/username",
+                                web::post().to(user::data_query::get_user_by_username_handler),
+                            ),
+                    ), // End of "/user/query" prefix
             ) // End of "/user" prefix
     })
     .bind("0.0.0.0:8080")?

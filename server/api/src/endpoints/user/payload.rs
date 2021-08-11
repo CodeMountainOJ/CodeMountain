@@ -38,7 +38,7 @@ pub struct SuccessPayload {
 #[derive(Serialize, Deserialize, Validate)]
 pub struct EmailChangePayload {
     #[validate(email)]
-    pub email: String
+    pub email: String,
 }
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -47,20 +47,20 @@ pub struct PasswordUpdatePayload {
     pub old_password: String,
 
     #[validate(length(min = 8, max = 100))]
-    pub new_password: String
+    pub new_password: String,
 }
 
 #[derive(Serialize, Deserialize, Validate)]
 pub struct GetUserByIdPayload {
-    pub id: i32
+    pub id: i32,
 }
 
 #[derive(Serialize, Deserialize, Validate)]
 pub struct GetUserByUsernamePayload {
-    pub username: String
+    pub username: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct ReturnPayloadUpdateAvatar {
-    pub new_avatar: String
+    pub new_avatar: String,
 }

@@ -101,7 +101,8 @@ pub async fn recover_password(
 
     let user = get_user_by_uid(&token_data.uid, &conn_pool)?;
 
-    let salted_password = hash(&new_password, DEFAULT_COST).map_err(|_| Errors::InternalServerError)?;
+    let salted_password =
+        hash(&new_password, DEFAULT_COST).map_err(|_| Errors::InternalServerError)?;
 
     match update_password(user.id, &salted_password, &conn_pool) {
         Ok(_) => Ok(actix_json(ReturnStatus { success: true })),

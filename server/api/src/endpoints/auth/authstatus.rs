@@ -16,15 +16,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::guards::auth::AuthRequired;
-use crate::errors::Errors;
-use actix_web::{Responder, web::Json};
 use crate::endpoints::auth::payload::AuthStatusUserReturnPayload;
+use crate::errors::Errors;
+use crate::guards::auth::AuthRequired;
+use actix_web::{web::Json, Responder};
 
-pub async fn check_auth_status_handler(
-    user: AuthRequired
-) -> Result<impl Responder, Errors> {
-    Ok(Json(AuthStatusUserReturnPayload {
-        user: user.user
-    }))
+pub async fn check_auth_status_handler(user: AuthRequired) -> Result<impl Responder, Errors> {
+    Ok(Json(AuthStatusUserReturnPayload { user: user.user }))
 }

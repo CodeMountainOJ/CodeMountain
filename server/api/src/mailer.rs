@@ -37,8 +37,8 @@ pub fn mail(body: String, receiver: &str, subject: &str) -> Result<(), Error> {
             Ok(_) => return Ok(()),
             Err(e) => {
                 dbg!("{}", &e);
-                return Err(e)
-            },
+                return Err(e);
+            }
         }
     }
 

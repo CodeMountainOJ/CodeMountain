@@ -32,7 +32,7 @@ async fn test_authstatus_authorized() {
             .data(pool.clone())
             .route("/", web::post().to(check_auth_status_handler)),
     )
-        .await;
+    .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
@@ -54,7 +54,7 @@ async fn test_authstatus_unauthorized() {
             .data(pool.clone())
             .route("/", web::post().to(check_auth_status_handler)),
     )
-        .await;
+    .await;
 
     let req = test::TestRequest::post()
         .header("authorization", "thiswillnotworkbruh")

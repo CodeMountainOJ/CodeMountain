@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use super::model::{NewUser, User};
-use crate::db::{Pool, schema, get_conn};
+use crate::db::{get_conn, schema, Pool};
 use crate::errors::Errors;
 use diesel::prelude::*;
 use schema::users::dsl::*;
@@ -57,11 +57,7 @@ pub fn edit_firstname(
         .get_result::<User>(&conn)
         .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
-pub fn edit_lastname(
-    user_id: i32,
-    user_lastname: &str,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn edit_lastname(user_id: i32, user_lastname: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     diesel::update(users.filter(id.eq(user_id)))
@@ -70,11 +66,7 @@ pub fn edit_lastname(
         .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
 
-pub fn update_password(
-    user_id: i32,
-    new_password: &str,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn update_password(user_id: i32, new_password: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     diesel::update(users.filter(id.eq(user_id)))
@@ -83,11 +75,7 @@ pub fn update_password(
         .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
 
-pub fn update_email(
-    user_id: i32,
-    new_email: &str,
-    conn_pool: &Pool
-) -> Result<User, Errors> {
+pub fn update_email(user_id: i32, new_email: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     diesel::update(users.filter(id.eq(user_id)))
@@ -96,11 +84,7 @@ pub fn update_email(
         .map_or_else(|_| Err(Errors::InternalServerError), Ok)
 }
 
-pub fn update_avatar(
-    user_id: i32,
-    new_avatar: &str,
-    conn_pool: &Pool
-) -> Result<User, Errors> {
+pub fn update_avatar(user_id: i32, new_avatar: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
 
     diesel::update(users.filter(id.eq(user_id)))

@@ -16,17 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use super::model::User;
-use crate::db::{Pool, get_conn, schema};
+use crate::db::{get_conn, schema, Pool};
 use crate::errors::Errors;
 use diesel::prelude::*;
 use schema::users::dsl::*;
 
-pub fn get_user_by_uid(
-    user_id: &i32,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn get_user_by_uid(user_id: &i32, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
-    
+
     let results = users
         .filter(id.eq(user_id))
         .limit(5)
@@ -40,12 +37,9 @@ pub fn get_user_by_uid(
     Ok(user)
 }
 
-pub fn get_user_by_email(
-    user_email: &str,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn get_user_by_email(user_email: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
-    
+
     let results = users
         .filter(email.like(user_email))
         .limit(5)
@@ -59,18 +53,15 @@ pub fn get_user_by_email(
     Ok(user)
 }
 
-pub fn get_user_by_firstname(
-    user_firstname: &str,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn get_user_by_firstname(user_firstname: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
-    
+
     let results = users
         .filter(firstname.like(user_firstname))
         .limit(5)
         .load::<User>(&conn)
         .map_err(|_| Errors::InternalServerError)?;
-    
+
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -79,18 +70,15 @@ pub fn get_user_by_firstname(
     Ok(user)
 }
 
-pub fn get_user_by_lastname(
-    user_lastname: &str,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn get_user_by_lastname(user_lastname: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
-    
+
     let results = users
         .filter(lastname.like(user_lastname))
         .limit(5)
         .load::<User>(&conn)
         .map_err(|_| Errors::InternalServerError)?;
-    
+
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -99,18 +87,15 @@ pub fn get_user_by_lastname(
     Ok(user)
 }
 
-pub fn get_user_by_username(
-    user_username: &str,
-    conn_pool: &Pool,
-) -> Result<User, Errors> {
+pub fn get_user_by_username(user_username: &str, conn_pool: &Pool) -> Result<User, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
-    
+
     let results = users
         .filter(username.like(user_username))
         .limit(5)
         .load::<User>(&conn)
         .map_err(|_| Errors::InternalServerError)?;
-    
+
     if results.is_empty() {
         return Err(Errors::BadRequest("No such user"));
     }
@@ -127,23 +112,29 @@ pub fn is_unique(
 ) -> Result<bool, Errors> {
     match get_user_by_firstname(user_firstname, conn_pool) {
         Ok(_) => return Ok(false),
-        Err(e) => if let Errors::InternalServerError = e {
-            return Err(Errors::InternalServerError)
-        },
+        Err(e) => {
+            if let Errors::InternalServerError = e {
+                return Err(Errors::InternalServerError);
+            }
+        }
     };
 
     match get_user_by_username(user_username, conn_pool) {
         Ok(_) => return Ok(false),
-        Err(e) => if let Errors::InternalServerError = e {
-            return Err(Errors::InternalServerError)
-        },
+        Err(e) => {
+            if let Errors::InternalServerError = e {
+                return Err(Errors::InternalServerError);
+            }
+        }
     };
 
     match get_user_by_email(user_email, conn_pool) {
         Ok(_) => return Ok(false),
-        Err(e) => if let Errors::InternalServerError = e {
-            return Err(Errors::InternalServerError)
-        },
+        Err(e) => {
+            if let Errors::InternalServerError = e {
+                return Err(Errors::InternalServerError);
+            }
+        }
     };
 
     Ok(true)

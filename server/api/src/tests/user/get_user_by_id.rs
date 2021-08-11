@@ -16,10 +16,10 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
+use crate::endpoints::user::data_query::get_user_by_id_handler;
 use crate::endpoints::user::payload::GetUserByIdPayload;
 use actix_web::{test, web, App};
 use std::env::set_var;
-use crate::endpoints::user::data_query::get_user_by_id_handler;
 
 static AUTHTOKEN: &'static str = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI1LCJleHAiOjk5OTk5OTk5OTksInRva2VuX3R5cGUiOiJBY2Nlc3NUb2tlbiJ9.iIBHQu2ZT4rsdTR_wCTITcCERhOgzGswSt5wWB3sWio";
 
@@ -33,13 +33,11 @@ async fn test_get_user_by_id_successful() {
             .data(pool.clone())
             .route("/", web::post().to(get_user_by_id_handler)),
     )
-        .await;
+    .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&GetUserByIdPayload {
-            id: 25
-        })
+        .set_json(&GetUserByIdPayload { id: 25 })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
@@ -58,13 +56,11 @@ async fn test_edit_password_unsuccessful() {
             .data(pool.clone())
             .route("/", web::post().to(get_user_by_id_handler)),
     )
-        .await;
+    .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
-        .set_json(&GetUserByIdPayload {
-            id: 1
-        })
+        .set_json(&GetUserByIdPayload { id: 1 })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;

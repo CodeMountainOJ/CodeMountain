@@ -16,8 +16,8 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use crate::db::create_pool;
-use crate::endpoints::auth::recovery::{send_password_reset_email, recover_password};
-use crate::endpoints::auth::payload::{SendPasswordResetTokenPayload,ResetPasswordPayload};
+use crate::endpoints::auth::payload::{ResetPasswordPayload, SendPasswordResetTokenPayload};
+use crate::endpoints::auth::recovery::{recover_password, send_password_reset_email};
 use actix_web::{test, web, App};
 use std::env::set_var;
 
@@ -62,22 +62,19 @@ async fn test_edit_email_successful_with_repeatations() {
     let req = test::TestRequest::post()
         .set_json(&ResetPasswordPayload {
             reset_token: PASSWORD_RESET_TOKEN.to_string(),
-            password: "password".to_string()
+            password: "password".to_string(),
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
 
     dbg!(resp.response());
-    assert!(
-        resp.status().is_success(),
-        "This should be successful"
-    );
+    assert!(resp.status().is_success(), "This should be successful");
 
     let req = test::TestRequest::post()
         .set_json(&ResetPasswordPayload {
             reset_token: PASSWORD_RESET_TOKEN.to_string(),
-            password: "password".to_string()
+            password: "password".to_string(),
         })
         .to_request();
 

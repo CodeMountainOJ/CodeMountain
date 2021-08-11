@@ -46,8 +46,7 @@ async fn test_edit_firstname_successful() {
     let resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
-    edit_firstname(25, &"John".to_string(), &pool)
-        .expect("Failed to revert the username");
+    edit_firstname(25, &"John".to_string(), &pool).expect("Failed to revert the username");
 
     dbg!(resp.response());
     assert!(resp.status().is_success(), "This should be successful");

@@ -16,42 +16,39 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use actix_multipart::Multipart;
-use actix_web::Responder;
-use crate::errors::Errors;
-use crate::guards::auth::AuthRequired;
-use futures_util::{StreamExt, TryStreamExt};
-use crate::image_validation::validate_img;
-use actix_web::web::Json;
-use crate::endpoints::user::payload::ReturnPayloadUpdateAvatar;
-use std::io::Write;
 use crate::db::user::mutation::update_avatar;
 use crate::db::Pool;
+use crate::endpoints::user::payload::ReturnPayloadUpdateAvatar;
+use crate::errors::Errors;
+use crate::guards::auth::AuthRequired;
+use crate::image_validation::validate_img;
+use actix_multipart::Multipart;
+use actix_web::web::Json;
+use actix_web::Responder;
+use futures_util::{StreamExt, TryStreamExt};
+use std::io::Write;
 
 // Handles avatar updating things
 // NOTE: this handler does not have automated tests and have to be manually tested
 pub async fn update_avatar_handler(
     mut payload: Multipart,
     user: AuthRequired,
-    conn_pool: actix_web::web::Data<Pool>
+    conn_pool: actix_web::web::Data<Pool>,
 ) -> Result<impl Responder, Errors> {
     let mut filename = String::new();
     let user_id = user.user.id;
 
     while let Ok(Some(mut field)) = payload.try_next().await {
         let content_type = field.content_disposition().unwrap();
-        filename = uuid::Uuid::new_v4().to_string() + &sanitize_filename::sanitize(&content_type
-            .get_filename()
-            .unwrap());
+        filename = uuid::Uuid::new_v4().to_string()
+            + &sanitize_filename::sanitize(&content_type.get_filename().unwrap());
 
         let filepath = std::path::Path::new(&std::env::var("USER_SUBMITTED_FILE_PATH").unwrap())
             .join(&sanitize_filename::sanitize(&filename));
 
-        let mut file = actix_web::web::block(move || {
-            std::fs::File::create(filepath)
-        })
-        .await
-        .map_err(|_| Errors::InternalServerError)?;
+        let mut file = actix_web::web::block(move || std::fs::File::create(filepath))
+            .await
+            .map_err(|_| Errors::InternalServerError)?;
 
         let mut final_buf: Vec<u8> = Vec::new();
 
@@ -65,20 +62,20 @@ pub async fn update_avatar_handler(
             return Err(Errors::BadRequest("Invalid file!"));
         }
 
-        actix_web::web::block(move || {
-            file.write(&final_buf)
-        })
+        actix_web::web::block(move || file.write(&final_buf))
             .await
             .map_err(|_| Errors::InternalServerError)?;
-    };
+    }
 
     // try removing the previous avatar and replacing it with the new one :^)
-    let _ =std::fs::remove_file(std::path::Path::new(&std::env::var("USER_SUBMITTED_FILE_PATH").unwrap())
-        .join(&user.user.avatar));
+    let _ = std::fs::remove_file(
+        std::path::Path::new(&std::env::var("USER_SUBMITTED_FILE_PATH").unwrap())
+            .join(&user.user.avatar),
+    );
 
     update_avatar(user_id, &filename, &conn_pool)?;
 
     Ok(Json(ReturnPayloadUpdateAvatar {
-        new_avatar: filename
+        new_avatar: filename,
     }))
 }

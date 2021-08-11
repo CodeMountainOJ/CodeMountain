@@ -34,21 +34,25 @@ async fn test_edit_password_successful() {
             .data(pool.clone())
             .route("/", web::post().to(edit_password_handler)),
     )
-        .await;
+    .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
         .set_json(&PasswordUpdatePayload {
             old_password: "password".to_string(),
-            new_password: "aaaabbbb".to_string()
+            new_password: "aaaabbbb".to_string(),
         })
         .to_request();
 
     let resp = test::call_service(&mut app, req).await;
 
     // revert the change because we'll need the value to be the previous one
-    update_password(25, &"$2b$12$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti".to_string(), &pool)
-        .expect("Failed to revert the password");
+    update_password(
+        25,
+        &"$2b$12$dDuxYtY4gfHBrxzZr6d6k.hHI1r9AAOLdTWC1rNSXKULwrpeiZYti".to_string(),
+        &pool,
+    )
+    .expect("Failed to revert the password");
 
     dbg!(resp.response());
     assert!(resp.status().is_success(), "This should be successful");
@@ -64,13 +68,13 @@ async fn test_edit_password_unsuccessful() {
             .data(pool.clone())
             .route("/", web::post().to(edit_password_handler)),
     )
-        .await;
+    .await;
 
     let req = test::TestRequest::post()
         .header("authorization", AUTHTOKEN)
         .set_json(&PasswordUpdatePayload {
             old_password: "a3b2c101".to_string(),
-            new_password: "aaaabbbb".to_string()
+            new_password: "aaaabbbb".to_string(),
         })
         .to_request();
 

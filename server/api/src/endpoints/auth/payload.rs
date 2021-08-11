@@ -1,30 +1,30 @@
-/* 
+/*
  *  CodeMountain is a free and open source online judge open for everyone
  *  Copyright (C) 2021 MD Gaziur Rahman Noor and contributors
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use validator::Validate;
-use serde::{ Deserialize, Serialize };
 use crate::db::user::model::User;
+use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Deserialize, Serialize, Validate)]
 pub struct LoginRequest {
     #[validate(email)]
     pub email: String,
     #[validate(length(min = 8, max = 100))]
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Deserialize, Serialize, Validate)]
@@ -38,46 +38,44 @@ pub struct RegisterRequest {
     #[validate(email)]
     pub email: String,
     #[validate(length(min = 8, max = 100))]
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct RefreshAccessTokenPayload {
-    pub refresh_token: String
+    pub refresh_token: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct RefreshAccessTokenReturnPayload {
-    pub access_token: String
+    pub access_token: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct LoginTokens {
     pub access_token: String,
-    pub refresh_token: String
+    pub refresh_token: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct ReturnStatus {
-    pub success: bool
+    pub success: bool,
 }
 
-#[derive(Validate)]
-#[derive(Serialize, Deserialize)]
+#[derive(Validate, Serialize, Deserialize)]
 pub struct SendPasswordResetTokenPayload {
     #[validate(email)]
-    pub email: String
+    pub email: String,
 }
 
-#[derive(Validate)]
-#[derive(Serialize, Deserialize)]
+#[derive(Validate, Serialize, Deserialize)]
 pub struct ResetPasswordPayload {
     pub reset_token: String,
     #[validate(length(min = 8, max = 100))]
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct AuthStatusUserReturnPayload {
-    pub user: User
+    pub user: User,
 }
