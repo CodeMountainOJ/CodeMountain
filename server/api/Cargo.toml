@@ -9,25 +9,8 @@ edition = "2018"
 [profile.dev]
 incremental = true
 
+[profile.release]
+incremental = true
+lto = true
+
 [dependencies]
-diesel = { version = "1.4.4", features = ["postgres", "chrono", "r2d2"] }
-dotenv = "0.15.0"
-actix-web = "3"
-actix-web-validator = "2"
-validator = { version = "0.12", features = ["derive"] }
-serde = { version = "1", features = ["derive"] }
-jsonwebtoken = "7"
-derive_more = "0.99.0"
-chrono = { version = "0.4", features = ["serde"] }
-bcrypt = "0.8"
-r2d2 = "0.8.9"
-futures-util = "0.3"
-actix-rt = "2"
-lazy_static = "1"
-lettre = "0.10.0-rc.3"
-r2d2_redis = "0.14.0"
-actix-ratelimit = "0.3.1"
-actix-multipart = "0.3.0"
-uuid = { version = "0.8", features = ["v4"] }
-image = "0.23.14"
-sanitize-filename = "0.2"

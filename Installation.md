@@ -51,30 +51,5 @@ fn main() {
 **Important note: Make sure you run the sandbox, or the rust program running the sandbox as root. Otherwise, it will fail. To prevent that, the sandbox will exit without doing anything. It'll simply write an error inside the log file called "ENTRYPOINT_LOG.log"**
 
 ## Getting The API Server Up And Running
-This guide will tell you how to test and run the server on your system without installing or having the hassle of setting up various stuff.
-
-### Requirements
-- Docker
-- Docker Compose
-
-### Testing(No setup needed)
-```shell
-docker-compose -f docker-compose.test.yml rm && docker-compose -f docker-compose.test.yml build && docker-compose -f docker-compose.test.yml up
-```
-### Running(Dev environment)
-You need to set some environment variables before running the server;
-
-- REDIS_CON: Not used right now. Set anything random
-- SMTP_EMAIL: Email to log in to SMTP server
-- SMTP_PASSWORD: Password to log in to SMTP server
-- SMTP_SERVER: SMTP server address
-- JWT_SECRET_KEY: A random secret key for signing JSON web tokens
-- DATABASE_URL: Can be a database server you set up, or the server that comes with the dockerfile. To use the server(database is not persistent),
-  use this: `postgres://postgres:postgres@postgres:5432/codemountain_dev`
-  
-Now you can run this to start the server:
-```shell
-docker-compose -f docker-compose.dev.yml rm && docker-compose -f docker-compose.dev.yml build && docker-compose -f docker-compose.dev.yml up
-```
-## Note
-If you find any issue in this doc, please create an issue in this repo.
+The API code is no longer available. It'll be rewritten with a better and readable
+code

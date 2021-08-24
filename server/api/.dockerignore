@@ -1,6 +1,0 @@
-target
-docker-compose.dev.yml
-docker-compose.test.yml
-dockerfile.dev
-dockerfile.test
-avatars
