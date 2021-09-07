@@ -15,3 +15,5 @@ Cargo.lock
 avatars
 
 **/workspace.xml
+
+config.toml

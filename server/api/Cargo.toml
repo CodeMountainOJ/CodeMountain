@@ -14,3 +14,9 @@ incremental = true
 lto = true
 
 [dependencies]
+actix-web = "3"
+config = "0.11"
+lazy_static = "1.4.0"
+serde = "1.0.130"
+log = "0.4.14"
+env_logger = "0.9.0"
