@@ -16,5 +16,30 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod health;
-pub mod init;
+use crate::db::schema::users;
+use chrono::NaiveDateTime;
+use uuid::Uuid;
+
+#[derive(Queryable, Clone)]
+pub struct User {
+    pub id: Uuid,
+    pub username: String,
+    pub firstname: String,
+    pub nickname: String,
+    pub email: String,
+    pub profile_pic: Option<String>,
+    pub password: String,
+    pub joined: NaiveDateTime,
+    pub banned: bool,
+    pub admin: bool,
+}
+
+#[derive(Insertable)]
+#[table_name = "users"]
+pub struct NewUser<'a> {
+    pub username: &'a str,
+    pub firstname: &'a str,
+    pub nickname: &'a str,
+    pub email: &'a String,
+    pub password: &'a str,
+}

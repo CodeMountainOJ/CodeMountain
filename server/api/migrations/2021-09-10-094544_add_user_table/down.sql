@@ -16,5 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod health;
-pub mod init;
+DROP TABLE IF EXISTS users;
+DROP EXTENSION IF EXISTS "uuid-ossp";
+DROP EXTENSION IF EXISTS "citext";

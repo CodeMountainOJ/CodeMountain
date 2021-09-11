@@ -16,5 +16,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod health;
-pub mod init;
+table! {
+    users (id) {
+        id -> Uuid,
+        username -> Varchar,
+        firstname -> Varchar,
+        nickname -> Varchar,
+        email -> Varchar,
+        profile_pic -> Nullable<Varchar>,
+        password -> Varchar,
+        joined -> Timestamp,
+        banned -> Bool,
+        admin -> Bool,
+    }
+}

@@ -16,5 +16,28 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod health;
-pub mod init;
+pub mod schema;
+pub mod users;
+
+use crate::config;
+use diesel::prelude::*;
+use diesel::r2d2::ConnectionManager;
+use r2d2::Error;
+use r2d2::PooledConnection;
+
+pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
+
+pub fn create_pool() -> Pool {
+    let database_url: String = config::get("DATABASE_URL");
+
+    let connection_manager = ConnectionManager::<PgConnection>::new(database_url);
+    r2d2::Pool::builder()
+        .build(connection_manager)
+        .expect("Failed to create database connection pool")
+}
+
+pub fn get_conn(
+    conn_pool: &Pool,
+) -> Result<PooledConnection<ConnectionManager<PgConnection>>, Error> {
+    conn_pool.get()
+}

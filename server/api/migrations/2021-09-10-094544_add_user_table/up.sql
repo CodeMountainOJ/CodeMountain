@@ -16,5 +16,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod health;
-pub mod init;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS users (
+    "id"            UUID PRIMARY KEY            DEFAULT uuid_generate_v1mc(),
+    "username"      VARCHAR(25)                 NOT NULL UNIQUE,
+    "firstname"     VARCHAR(255)                NOT NULL,
+    "nickname"      VARCHAR(255)                NOT NULL,
+    "email"         VARCHAR(255)                NOT NULL UNIQUE,
+    "profile_pic"   VARCHAR(255),
+    "password"      VARCHAR(255)                NOT NULL,
+    "joined"        TIMESTAMP NOT NULL          DEFAULT current_timestamp,
+    "banned"        BOOLEAN   NOT NULL          DEFAULT false,
+    "admin"         BOOLEAN   NOT NULL          DEFAULT false
+) WITH (
+    OIDS=false
+);
