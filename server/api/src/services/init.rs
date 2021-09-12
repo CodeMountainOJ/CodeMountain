@@ -19,6 +19,11 @@
 use crate::services::health::get_health_service;
 use actix_web::web::{scope, ServiceConfig};
 
+use super::auth::get_auth_service;
+
 pub fn init_v1api(cfg: &mut ServiceConfig) {
-    cfg.service(scope("/v1").service(get_health_service()));
+    cfg.service(scope("/v1")
+        .service(get_health_service())
+        .service(get_auth_service())
+    );
 }

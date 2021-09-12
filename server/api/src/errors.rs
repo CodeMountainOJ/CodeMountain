@@ -60,7 +60,7 @@ impl ResponseError for Errors {
                 success: false,
                 error: String::from("Access forbidden"),
             }),
-            Errors::BadRequest(error) => HttpResponse::InternalServerError().json(Ret {
+            Errors::BadRequest(error) => HttpResponse::BadRequest().json(Ret {
                 success: false,
                 error: error.clone(),
             }),
