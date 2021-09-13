@@ -16,18 +16,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub enum TokenType {
     AccessToken,
     RefreshToken,
-    PasswordResetToken
+    PasswordResetToken,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Token {
     pub user_id: String,
     pub token_type: TokenType,
-    pub exp: i64
+    pub exp: i64,
 }

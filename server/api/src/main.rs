@@ -26,12 +26,12 @@ use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use log::info;
 
+mod common;
 mod config;
 mod db;
 mod errors;
-mod services;
-mod common;
 mod jwt;
+mod services;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

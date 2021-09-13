@@ -16,7 +16,7 @@
 *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-mod claims;
 pub mod accesstoken;
-pub mod refreshtoken;
+mod claims;
 pub mod password_reset_token;
+pub mod refreshtoken;

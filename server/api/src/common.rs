@@ -20,5 +20,5 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct StatusPayload {
     pub success: bool,
-    pub message: Option<String>
+    pub message: Option<String>,
 }

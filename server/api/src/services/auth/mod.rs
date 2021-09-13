@@ -15,7 +15,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web::{Scope, web::{post, scope}};
+use actix_web::{
+    web::{post, scope},
+    Scope,
+};
 
 mod login;
 mod password_reset;
@@ -23,6 +26,7 @@ mod refresh_accesstoken;
 mod register;
 
 pub fn get_auth_service() -> Scope {
-   scope("/auth")
-       .route("/login", post().to(login::login_handler))
+    scope("/auth")
+        .route("/login", post().to(login::login_handler))
+        .route("/register", post().to(register::register_handler))
 }

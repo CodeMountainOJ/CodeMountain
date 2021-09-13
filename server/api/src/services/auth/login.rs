@@ -15,13 +15,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use serde::{Serialize, Deserialize};
-use validator::Validate;
+use actix_web::{
+    web::{Data, Json},
+    Responder,
+};
 use actix_web_validator::Json as validate_payload;
-use actix_web::{web::{Data, Json}, Responder};
-use argon2::{Config, verify_encoded};
+use argon2::{verify_encoded, Config};
+use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-use crate::{db::{Pool, users::query::get_user_by_email}, errors::Errors, jwt::{accesstoken::generate_accesstoken, refreshtoken::{self, generate_refreshtoken}}};
+use crate::{
+    db::{users::query::get_user_by_email, Pool},
+    errors::Errors,
+    jwt::{accesstoken::generate_accesstoken, refreshtoken::generate_refreshtoken},
+};
 
 // payload structs
 #[derive(Validate, Deserialize)]
@@ -29,23 +36,27 @@ pub struct LoginRequest {
     #[validate(email)]
     email: String,
 
-    password: String
+    password: String,
 }
 
 #[derive(Serialize)]
 pub struct AuthTokenPayload {
     pub refresh_token: String,
-    pub access_token: String
+    pub access_token: String,
 }
 
-pub async fn login_handler(conn_pool: Data<Pool>, payload: validate_payload<LoginRequest>) -> Result<impl Responder, Errors> {
-    let user = get_user_by_email(&conn_pool, &payload.email).map_err(|_| Errors::BadRequest(String::from("Invalid creds")))?; // do not let the user know about errors
+pub async fn login_handler(
+    conn_pool: Data<Pool>,
+    payload: validate_payload<LoginRequest>,
+) -> Result<impl Responder, Errors> {
+    let user = get_user_by_email(&conn_pool, &payload.email)
+        .map_err(|_| Errors::BadRequest(String::from("Invalid creds")))?; // do not let the user know about errors
     let password_hash = user.password;
-    
+
     // verify
-    let config = Config::default();
-    let matches = verify_encoded(&password_hash, payload.password.as_bytes()).map_err(|_| Errors::InternalServerError)?;
-    
+    let matches = verify_encoded(&password_hash, payload.password.as_bytes())
+        .map_err(|_| Errors::InternalServerError)?;
+
     if matches {
         // generate required tokens
         let access_token = generate_accesstoken(&user.id)?;
@@ -53,10 +64,9 @@ pub async fn login_handler(conn_pool: Data<Pool>, payload: validate_payload<Logi
 
         Ok(Json(AuthTokenPayload {
             access_token,
-            refresh_token
+            refresh_token,
         }))
-    }
-    else {
+    } else {
         return Err(Errors::BadRequest(String::from("Invalid creds")));
     }
 }

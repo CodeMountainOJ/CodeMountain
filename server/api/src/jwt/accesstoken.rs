@@ -16,17 +16,22 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use jsonwebtoken::{EncodingKey, Header, encode};
+use jsonwebtoken::{encode, EncodingKey, Header};
 use uuid::Uuid;
 
-use crate::{config::get, errors::Errors};
 use super::claims::{Token, TokenType};
+use crate::{config::get, errors::Errors};
 
 pub fn generate_accesstoken(user_id: &Uuid) -> Result<String, Errors> {
     let claims = Token {
         user_id: user_id.to_string(),
         token_type: TokenType::AccessToken,
-        exp: (chrono::Utc::now() + chrono::Duration::minutes(5)).timestamp()
+        exp: (chrono::Utc::now() + chrono::Duration::minutes(5)).timestamp(),
     };
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(get::<String>("JWT_SECRET_KEY").as_ref())).map_err(|_| Errors::InternalServerError) 
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(get::<String>("JWT_SECRET_KEY").as_ref()),
+    )
+    .map_err(|_| Errors::InternalServerError)
 }
