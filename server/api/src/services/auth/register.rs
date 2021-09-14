@@ -20,12 +20,11 @@ use crate::db::users::mutations::insert_user;
 use crate::db::users::query::is_unique_user;
 use crate::db::Pool;
 use crate::errors::Errors;
-use actix_web::dev::JsonBody;
 use actix_web::web::{Data, Json};
 use actix_web::Responder;
 use actix_web_validator::Json as validate_payload;
 use rand::RngCore;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use validator::Validate;
 
 #[derive(Validate, Deserialize)]

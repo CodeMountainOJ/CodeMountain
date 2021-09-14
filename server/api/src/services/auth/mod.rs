@@ -29,4 +29,5 @@ pub fn get_auth_service() -> Scope {
     scope("/auth")
         .route("/login", post().to(login::login_handler))
         .route("/register", post().to(register::register_handler))
+        .route("/refresh_accesstoken", post().to(refresh_accesstoken::refresh_accesstoken_handler))
 }

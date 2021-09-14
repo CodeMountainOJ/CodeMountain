@@ -20,7 +20,7 @@ use actix_web::{
     Responder,
 };
 use actix_web_validator::Json as validate_payload;
-use argon2::{verify_encoded, Config};
+use argon2::verify_encoded;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
