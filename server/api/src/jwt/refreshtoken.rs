@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use jsonwebtoken::{encode, EncodingKey, Header, decode, DecodingKey, Validation};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use uuid::Uuid;
 
 use super::claims::{Token, TokenType};
@@ -37,9 +37,16 @@ pub fn generate_refreshtoken(user_id: &Uuid) -> Result<String, Errors> {
 }
 
 pub fn verify_refreshtoken(token: &str) -> Result<Token, Errors> {
-    decode::<Token>(token, &DecodingKey::from_secret(get::<String>("JWT_SECRET_KEY").as_ref()), &Validation::default())
-        .map_or_else(|e| Err(Errors::BadRequest(e.to_string())), |v| match v.claims.token_type {
+    decode::<Token>(
+        token,
+        &DecodingKey::from_secret(get::<String>("JWT_SECRET_KEY").as_ref()),
+        &Validation::default(),
+    )
+    .map_or_else(
+        |e| Err(Errors::BadRequest(e.to_string())),
+        |v| match v.claims.token_type {
             TokenType::RefreshToken => Ok(v.claims),
-            _ => Err(Errors::BadRequest(String::from("Invalid token!")))
-        })
+            _ => Err(Errors::BadRequest(String::from("Invalid token!"))),
+        },
+    )
 }

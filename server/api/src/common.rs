@@ -19,6 +19,7 @@ use crate::config::get;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use serde::Serialize;
+use lettre::message::MultiPart;
 
 #[derive(Serialize)]
 pub struct StatusPayload {
@@ -31,12 +32,12 @@ pub fn send_mail(receiver: &str, sender: &str, body: &str, subject: &str) -> boo
         .from(sender.parse().unwrap())
         .to(receiver.parse().unwrap())
         .subject(subject)
-        .body(String::from(body))
+        .multipart(MultiPart::alternative_plain_html(body.to_string().clone(), body.to_string()))
         .unwrap();
 
-    let creds = Credentials::new(get("SMTP_USERNAME"), get("SMTP_PASSWORD"));
+    let creds = Credentials::new(get::<String>("SMTP_EMAIL"), get::<String>("SMTP_PASSWORD"));
 
-    let mailer = SmtpTransport::relay(get("SMTP_SERVER"))
+    let mailer = SmtpTransport::relay(&get::<String>("SMTP_SERVER"))
         .unwrap()
         .credentials(creds)
         .build();

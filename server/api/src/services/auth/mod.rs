@@ -29,5 +29,20 @@ pub fn get_auth_service() -> Scope {
     scope("/auth")
         .route("/login", post().to(login::login_handler))
         .route("/register", post().to(register::register_handler))
-        .route("/refresh_accesstoken", post().to(refresh_accesstoken::refresh_accesstoken_handler))
+        .route(
+            "/refresh_accesstoken",
+            post().to(refresh_accesstoken::refresh_accesstoken_handler),
+        )
+        .route(
+            "/forgot_password",
+            post().to(password_reset::reset_password_request_handler)
+        )
+        .route(
+            "/verify_reset_token",
+            post().to(password_reset::verify_reset_token_handler)
+        )
+        .route(
+            "/reset_password",
+                post().to(password_reset::reset_password_handler)
+        )
 }

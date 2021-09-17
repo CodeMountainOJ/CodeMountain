@@ -15,28 +15,35 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use serde::{Serialize, Deserialize};
-use crate::jwt::refreshtoken::verify_refreshtoken;
-use crate::jwt::accesstoken::generate_accesstoken;
-use uuid::Uuid;
 use crate::errors::Errors;
-use actix_web::Responder;
+use crate::jwt::accesstoken::generate_accesstoken;
+use crate::jwt::refreshtoken::verify_refreshtoken;
 use actix_web::web::Json;
+use actix_web::Responder;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct RefreshAccessTokenPayload {
-    pub refresh_token: String
+    pub refresh_token: String,
 }
 
 #[derive(Serialize)]
 struct AccessTokenPayload {
-    pub access_token: String
+    pub access_token: String,
 }
 
-pub async fn refresh_accesstoken_handler(payload: Json<RefreshAccessTokenPayload>) -> Result<impl Responder, Errors> {
+pub async fn refresh_accesstoken_handler(
+    payload: Json<RefreshAccessTokenPayload>,
+) -> Result<impl Responder, Errors> {
     // no need to check for user's existence
     let claims = verify_refreshtoken(&payload.refresh_token)?;
     Ok(Json(AccessTokenPayload {
-        access_token: generate_accesstoken(&claims.user_id.parse::<Uuid>().map_err(|e| Errors::BadRequest(e.to_string()))?)?
+        access_token: generate_accesstoken(
+            &claims
+                .user_id
+                .parse::<Uuid>()
+                .map_err(|e| Errors::BadRequest(e.to_string()))?,
+        )?,
     }))
 }
