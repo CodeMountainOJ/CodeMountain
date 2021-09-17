@@ -15,10 +15,51 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+use crate::config::get;
+use lettre::transport::smtp::authentication::Credentials;
+use lettre::{Message, SmtpTransport, Transport};
 use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct StatusPayload {
     pub success: bool,
     pub message: Option<String>,
+}
+
+pub fn send_mail(receiver: &str, sender: &str, body: &str, subject: &str) -> bool {
+    let email = Message::builder()
+        .from(sender.parse().unwrap())
+        .to(receiver.parse().unwrap())
+        .subject(subject)
+        .body(String::from(body))
+        .unwrap();
+
+    let creds = Credentials::new(get("SMTP_USERNAME"), get("SMTP_PASSWORD"));
+
+    let mailer = SmtpTransport::relay(get("SMTP_SERVER"))
+        .unwrap()
+        .credentials(creds)
+        .build();
+
+    match mailer.send(&email) {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
+
+pub fn send_password_reset_email(
+    receiver: &str,
+    sender: &str,
+    subject: &str,
+    reset_token: &str,
+    username: &str,
+    nickname: &str,
+) -> bool {
+    let mut email_body = std::fs::read_to_string("email_templates/password_reset.html").unwrap();
+
+    email_body = email_body.replace("{{lastname}}", &nickname);
+    email_body = email_body.replace("{{username}}", &username);
+    email_body = email_body.replace("{{otp}}", &reset_token);
+
+    send_mail(receiver, sender, &email_body, subject)
 }
