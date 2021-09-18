@@ -15,18 +15,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+use actix_web::Scope;
+use actix_web::web::{scope, post};
 
-use crate::services::health::get_health_service;
-use actix_web::web::{scope, ServiceConfig};
+mod query;
 
-use super::auth::get_auth_service;
-use crate::services::user::get_user_service;
-
-pub fn init_v1api(cfg: &mut ServiceConfig) {
-    cfg.service(
-        scope("/v1")
-            .service(get_health_service())
-            .service(get_auth_service())
-            .service(get_user_service()),
-    );
+pub fn get_user_service() -> Scope {
+    scope("/user")
+        .service(
+            scope("/query")
+                .route("/id", post().to(query::get_user_by_id))
+                .route("/", post().to(query::get_user_by_query)) // f u
+        )
 }

@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pub mod auth;
+mod auth;
 mod health;
+mod user;
 pub mod init;
