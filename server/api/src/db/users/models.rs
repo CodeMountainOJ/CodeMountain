@@ -19,8 +19,9 @@
 use crate::db::schema::users;
 use chrono::NaiveDateTime;
 use uuid::Uuid;
+use serde::Serialize;
 
-#[derive(Queryable, Clone)]
+#[derive(Queryable, Clone, Serialize)]
 pub struct User {
     pub id: Uuid,
     pub username: String,
@@ -32,6 +33,35 @@ pub struct User {
     pub joined: NaiveDateTime,
     pub banned: bool,
     pub admin: bool,
+}
+
+#[derive(Clone, Serialize)]
+pub struct SafeUser {
+    pub id: Uuid,
+    pub username: String,
+    pub firstname: String,
+    pub nickname: String,
+    pub email: String,
+    pub profile_pic: Option<String>,
+    pub joined: NaiveDateTime,
+    pub banned: bool,
+    pub admin: bool,
+}
+
+impl From<&User> for SafeUser {
+    fn from(user: &User) -> Self {
+        Self {
+            id: user.id.clone(),
+            username: user.username.clone(),
+            firstname: user.firstname.clone(),
+            nickname: user.nickname.clone(),
+            email: user.email.clone(),
+            profile_pic: user.profile_pic.clone(),
+            joined: user.joined.clone(),
+            banned: user.banned,
+            admin: user.admin
+        }
+    }
 }
 
 #[derive(Insertable)]

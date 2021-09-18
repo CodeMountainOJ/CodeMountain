@@ -16,6 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod models;
+pub mod models;
 pub mod mutations;
 pub mod query;

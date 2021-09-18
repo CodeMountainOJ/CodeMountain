@@ -26,6 +26,7 @@ use diesel::result::Error as diesel_error;
 use uuid::Uuid;
 
 use super::models::User;
+use crate::db::users::models::SafeUser;
 
 fn map_err(err: diesel_error) -> Errors {
     match err {
@@ -61,19 +62,22 @@ pub fn get_user_by_username(conn_pool: &Pool, user_username: &str) -> Result<Use
         .map_err(|e| map_err(e))
 }
 
-pub fn get_users_from_query(conn_pool: &Pool, query: &str) -> Result<Vec<User>, Errors> {
+pub fn get_users_from_query(conn_pool: &Pool, query: &str) -> Result<Vec<SafeUser>, Errors> {
     let conn = get_conn(conn_pool).map_err(|_| Errors::InternalServerError)?;
 
-    users
+    let pattern = String::from("%") + query + "%";
+    let queried_users: Vec<User> = users
         .filter(
             username
-                .like(query)
-                .or(email.like(query))
-                .or(firstname.like(query))
-                .or(nickname.like(query)),
+                .like(&pattern)
+                .or(email.like(&pattern))
+                .or(firstname.like(&pattern))
+                .or(nickname.like(&pattern)),
         )
         .get_results(&conn)
-        .map_err(|e| map_err(e))
+        .map_err(|e| map_err(e))?;
+
+    Ok(queried_users.iter().map(|u| SafeUser::from(u)).collect())
 }
 
 pub fn is_unique_user(
