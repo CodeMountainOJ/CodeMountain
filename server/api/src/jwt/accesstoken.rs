@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{encode, EncodingKey, Header, TokenData, decode, DecodingKey, Validation};
 use uuid::Uuid;
 
 use super::claims::{Token, TokenType};
@@ -34,4 +34,19 @@ pub fn generate_accesstoken(user_id: &Uuid) -> Result<String, Errors> {
         &EncodingKey::from_secret(get::<String>("JWT_SECRET_KEY").as_ref()),
     )
     .map_err(|_| Errors::InternalServerError)
+}
+
+pub fn verify_access_token(token: &str, secret: &str) -> Result<Token, Errors> {
+    decode(
+        token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &Validation::default()
+    )
+        .map_or_else(
+            |e| Err(Errors::BadRequest(e.to_string())),
+            |v: TokenData<Token>| match v.claims.token_type {
+                TokenType::AccessToken => Ok(v.claims),
+                _ => Err(Errors::BadRequest(String::from("Invalid token!"))),
+            },
+        )
 }

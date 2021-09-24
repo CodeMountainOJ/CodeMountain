@@ -15,42 +15,4 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#[macro_use]
-extern crate diesel;
-
-use crate::config::run_config_check;
-use crate::db::create_pool;
-use crate::services::init::init_v1api;
-use actix_web::middleware::Logger;
-use actix_web::{App, HttpServer};
-use log::info;
-
-mod common;
-mod config;
-mod db;
-mod errors;
-mod jwt;
-mod guards;
-mod services;
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    env_logger::init();
-    run_config_check();
-
-    info!(
-        "Listening on address: {}",
-        config::get::<String>("LISTENING_URL")
-    );
-    HttpServer::new(|| {
-        App::new()
-            .wrap(Logger::default())
-            .wrap(Logger::new("%a %{User-Agent}i"))
-            .data(create_pool())
-            .configure(init_v1api)
-    })
-    .bind("0.0.0.0:8080")?
-    .run()
-    .await
-}
+pub mod require_auth;

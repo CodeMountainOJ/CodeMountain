@@ -22,6 +22,7 @@ use crate::{
 };
 use diesel::prelude::*;
 use uuid::Uuid;
+use diesel::result::Error;
 
 pub fn insert_user(
     conn_pool: &Pool,
@@ -53,7 +54,12 @@ pub fn update_email(conn_pool: &Pool, new_email: &str, user_id: &Uuid) -> Result
     diesel::update(users.filter(id.eq(user_id)))
         .set(email.eq(String::from(new_email)))
         .execute(&conn)
-        .map_err(|_| Errors::InternalServerError)
+        .map_err(|e| match e {
+            Error::DatabaseError(de, _) => {
+                Errors::BadRequest(format!("{:?}", de))
+            },
+            _ => Errors::InternalServerError
+        })
 }
 
 pub fn update_firstname(
