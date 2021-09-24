@@ -25,6 +25,8 @@ use crate::services::init::init_v1api;
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use log::info;
+use actix_ratelimit::{MemoryStore, RateLimiter, MemoryStoreActor};
+use std::time::Duration;
 
 mod common;
 mod config;
@@ -39,12 +41,19 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     run_config_check();
 
+    let store = MemoryStore::new();
+
     info!(
         "Listening on address: {}",
         config::get::<String>("LISTENING_URL")
     );
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .wrap(
+                RateLimiter::new(MemoryStoreActor::from(store.clone()).start())
+                    .with_interval(Duration::from_secs(60))
+                    .with_max_requests(100)
+            )
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
             .data(create_pool())
