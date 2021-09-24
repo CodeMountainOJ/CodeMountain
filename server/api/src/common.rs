@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use crate::config::get;
+use lettre::message::MultiPart;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use serde::Serialize;
-use lettre::message::MultiPart;
 
 #[derive(Serialize)]
 pub struct StatusPayload {
@@ -32,7 +32,10 @@ pub fn send_mail(receiver: &str, sender: &str, body: &str, subject: &str) -> boo
         .from(sender.parse().unwrap())
         .to(receiver.parse().unwrap())
         .subject(subject)
-        .multipart(MultiPart::alternative_plain_html(body.to_string().clone(), body.to_string()))
+        .multipart(MultiPart::alternative_plain_html(
+            body.to_string(),
+            body.to_string(),
+        ))
         .unwrap();
 
     let creds = Credentials::new(get::<String>("SMTP_EMAIL"), get::<String>("SMTP_PASSWORD"));
@@ -42,10 +45,7 @@ pub fn send_mail(receiver: &str, sender: &str, body: &str, subject: &str) -> boo
         .credentials(creds)
         .build();
 
-    match mailer.send(&email) {
-        Ok(_) => true,
-        Err(_) => false,
-    }
+    mailer.send(&email).is_ok()
 }
 
 pub fn send_password_reset_email(
@@ -58,9 +58,9 @@ pub fn send_password_reset_email(
 ) -> bool {
     let mut email_body = std::fs::read_to_string("email_templates/password_reset.html").unwrap();
 
-    email_body = email_body.replace("{{lastname}}", &nickname);
-    email_body = email_body.replace("{{username}}", &username);
-    email_body = email_body.replace("{{otp}}", &reset_token);
+    email_body = email_body.replace("{{lastname}}", nickname);
+    email_body = email_body.replace("{{username}}", username);
+    email_body = email_body.replace("{{otp}}", reset_token);
 
     send_mail(receiver, sender, &email_body, subject)
 }

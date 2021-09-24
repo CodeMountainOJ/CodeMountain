@@ -35,14 +35,14 @@ pub fn get_auth_service() -> Scope {
         )
         .route(
             "/forgot_password",
-            post().to(password_reset::reset_password_request_handler)
+            post().to(password_reset::reset_password_request_handler),
         )
         .route(
             "/verify_reset_token",
-            post().to(password_reset::verify_reset_token_handler)
+            post().to(password_reset::verify_reset_token_handler),
         )
         .route(
             "/reset_password",
-                post().to(password_reset::reset_password_handler)
+            post().to(password_reset::reset_password_handler),
         )
 }

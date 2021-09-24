@@ -15,8 +15,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+use actix_web::web::{post, scope};
 use actix_web::Scope;
-use actix_web::web::{scope, post};
 
 mod query;
 mod update;
@@ -26,13 +26,13 @@ pub fn get_user_service() -> Scope {
         .service(
             scope("/query")
                 .route("/id", post().to(query::get_user_by_id))
-                .route("/", post().to(query::get_user_by_query)) // f u
+                .route("/", post().to(query::get_user_by_query)), // f u
         )
         .service(
             scope("/update")
                 .route("/firstname", post().to(update::update_firstname_handler))
                 .route("/nickname", post().to(update::update_nickname_handler))
                 .route("/email", post().to(update::update_email_handler))
-                .route("/password", post().to(update::update_password_handler))
+                .route("/password", post().to(update::update_password_handler)),
         )
 }

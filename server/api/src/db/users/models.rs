@@ -18,8 +18,8 @@
 
 use crate::db::schema::users;
 use chrono::NaiveDateTime;
-use uuid::Uuid;
 use serde::Serialize;
+use uuid::Uuid;
 
 #[derive(Queryable, Clone, Serialize)]
 pub struct User {
@@ -51,15 +51,15 @@ pub struct SafeUser {
 impl From<&User> for SafeUser {
     fn from(user: &User) -> Self {
         Self {
-            id: user.id.clone(),
+            id: user.id,
             username: user.username.clone(),
             firstname: user.firstname.clone(),
             nickname: user.nickname.clone(),
             email: user.email.clone(),
             profile_pic: user.profile_pic.clone(),
-            joined: user.joined.clone(),
+            joined: user.joined,
             banned: user.banned,
-            admin: user.admin
+            admin: user.admin,
         }
     }
 }

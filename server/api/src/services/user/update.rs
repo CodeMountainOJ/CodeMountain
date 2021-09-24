@@ -15,35 +15,37 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use serde::{Serialize, Deserialize};
-use validator::Validate;
-use actix_web::web::{Data, Json};
-use crate::db::Pool;
-use actix_web_validator::Json as validate;
-use actix_web::Responder;
-use crate::errors::Errors;
-use crate::db::users::mutations::{update_firstname, update_nickname, update_password, update_email};
-use crate::guards::require_auth::RequireAuth;
 use crate::common::StatusPayload;
-use argon2::{verify_encoded, hash_encoded};
+use crate::db::users::mutations::{
+    update_email, update_firstname, update_nickname, update_password,
+};
+use crate::db::Pool;
+use crate::errors::Errors;
+use crate::guards::require_auth::RequireAuth;
+use actix_web::web::{Data, Json};
+use actix_web::Responder;
+use actix_web_validator::Json as validate;
+use argon2::{hash_encoded, verify_encoded};
 use rand::{thread_rng, RngCore};
+use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Validate, Serialize, Deserialize)]
 pub struct UpdateFirstnamePayload {
     #[validate(length(min = 1, max = 255))]
-    firstname: String
+    firstname: String,
 }
 
 #[derive(Validate, Serialize, Deserialize)]
 pub struct UpdateNicknamePayload {
     #[validate(length(min = 1, max = 255))]
-    nickname: String
+    nickname: String,
 }
 
 #[derive(Validate, Serialize, Deserialize)]
 pub struct UpdateEmailPayload {
     #[validate(email)]
-    email: String
+    email: String,
 }
 
 #[derive(Validate, Serialize, Deserialize)]
@@ -52,24 +54,40 @@ pub struct UpdatePasswordPayload {
     old_password: String,
 
     #[validate(length(min = 8, max = 100))]
-    new_password: String
+    new_password: String,
 }
 
-pub async fn update_firstname_handler(conn_pool: Data<Pool>, payload: validate<UpdateFirstnamePayload>, user: RequireAuth) -> Result<impl Responder, Errors> {
-    update_firstname(&conn_pool, &payload.firstname, &user.user.id).map(|_| Json(StatusPayload {
-        success: true,
-        message: None
-    }))
+pub async fn update_firstname_handler(
+    conn_pool: Data<Pool>,
+    payload: validate<UpdateFirstnamePayload>,
+    user: RequireAuth,
+) -> Result<impl Responder, Errors> {
+    update_firstname(&conn_pool, &payload.firstname, &user.user.id).map(|_| {
+        Json(StatusPayload {
+            success: true,
+            message: None,
+        })
+    })
 }
 
-pub async fn update_nickname_handler(conn_pool: Data<Pool>, payload: validate<UpdateNicknamePayload>, user: RequireAuth) -> Result<impl Responder, Errors> {
-    update_nickname(&conn_pool, &payload.nickname, &user.user.id).map(|_| Json(StatusPayload {
-        success: true,
-        message: None
-    }))
+pub async fn update_nickname_handler(
+    conn_pool: Data<Pool>,
+    payload: validate<UpdateNicknamePayload>,
+    user: RequireAuth,
+) -> Result<impl Responder, Errors> {
+    update_nickname(&conn_pool, &payload.nickname, &user.user.id).map(|_| {
+        Json(StatusPayload {
+            success: true,
+            message: None,
+        })
+    })
 }
 
-pub async fn update_password_handler(conn_pool: Data<Pool>, payload: validate<UpdatePasswordPayload>, user: RequireAuth) -> Result<impl Responder, Errors> {
+pub async fn update_password_handler(
+    conn_pool: Data<Pool>,
+    payload: validate<UpdatePasswordPayload>,
+    user: RequireAuth,
+) -> Result<impl Responder, Errors> {
     let is_correct_password = verify_encoded(&user.user.password, payload.old_password.as_bytes())
         .map_err(|_| Errors::InternalServerError)?;
 
@@ -81,18 +99,30 @@ pub async fn update_password_handler(conn_pool: Data<Pool>, payload: validate<Up
     let mut rng = thread_rng();
     rng.fill_bytes(&mut salt);
 
-    let hashed_password = hash_encoded(payload.new_password.as_bytes(), &salt, &argon2::Config::default())
-        .map_err(|_| Errors::InternalServerError)?;
+    let hashed_password = hash_encoded(
+        payload.new_password.as_bytes(),
+        &salt,
+        &argon2::Config::default(),
+    )
+    .map_err(|_| Errors::InternalServerError)?;
 
-    update_password(&conn_pool, &hashed_password, &user.user.id).map(|_| Json(StatusPayload {
-        success: true,
-        message: None
-    }))
+    update_password(&conn_pool, &hashed_password, &user.user.id).map(|_| {
+        Json(StatusPayload {
+            success: true,
+            message: None,
+        })
+    })
 }
 
-pub async fn update_email_handler(conn_pool: Data<Pool>, payload: validate<UpdateEmailPayload>, user: RequireAuth) -> Result<impl Responder, Errors> {
-    update_email(&conn_pool, &payload.email, &user.user.id).map(|_| Json(StatusPayload {
-        success: true,
-        message: None
-    }))
+pub async fn update_email_handler(
+    conn_pool: Data<Pool>,
+    payload: validate<UpdateEmailPayload>,
+    user: RequireAuth,
+) -> Result<impl Responder, Errors> {
+    update_email(&conn_pool, &payload.email, &user.user.id).map(|_| {
+        Json(StatusPayload {
+            success: true,
+            message: None,
+        })
+    })
 }

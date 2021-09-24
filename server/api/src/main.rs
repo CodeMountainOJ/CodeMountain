@@ -22,18 +22,18 @@ extern crate diesel;
 use crate::config::run_config_check;
 use crate::db::create_pool;
 use crate::services::init::init_v1api;
+use actix_ratelimit::{MemoryStore, MemoryStoreActor, RateLimiter};
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use log::info;
-use actix_ratelimit::{MemoryStore, RateLimiter, MemoryStoreActor};
 use std::time::Duration;
 
 mod common;
 mod config;
 mod db;
 mod errors;
-mod jwt;
 mod guards;
+mod jwt;
 mod services;
 
 #[actix_web::main]
@@ -52,7 +52,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(
                 RateLimiter::new(MemoryStoreActor::from(store.clone()).start())
                     .with_interval(Duration::from_secs(60))
-                    .with_max_requests(100)
+                    .with_max_requests(100),
             )
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))

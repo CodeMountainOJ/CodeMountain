@@ -15,16 +15,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web::{FromRequest, HttpRequest};
-use actix_web::dev::Payload;
-use crate::errors::Errors;
-use futures_util::future::{err, ok, Ready};
-use crate::jwt::accesstoken::verify_access_token;
 use crate::config::get;
-use actix_web::web::Data;
-use crate::db::Pool;
-use crate::db::users::query::get_user;
 use crate::db::users::models::User;
+use crate::db::users::query::get_user;
+use crate::db::Pool;
+use crate::errors::Errors;
+use crate::jwt::accesstoken::verify_access_token;
+use actix_web::dev::Payload;
+use actix_web::web::Data;
+use actix_web::{FromRequest, HttpRequest};
+use futures_util::future::{err, ok, Ready};
 
 pub struct RequireAuth {
     pub user: User,
@@ -38,39 +38,36 @@ impl FromRequest for RequireAuth {
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
         let bearer = match req.headers().get("authorization") {
             Some(t) => t,
-            None => return err(Errors::AccessForbidden)
+            None => return err(Errors::AccessForbidden),
         }
-            .to_str()
-            .unwrap();
+        .to_str()
+        .unwrap();
 
         if bearer.is_empty() {
-            return err(Errors::AccessForbidden)
+            return err(Errors::AccessForbidden);
         }
 
-        let bearer = bearer.split_ascii_whitespace()
-            .collect::<Vec<&str>>();
+        let bearer = bearer.split_ascii_whitespace().collect::<Vec<&str>>();
         if bearer.len() != 2 {
             return err(Errors::AccessForbidden);
         }
 
-        let raw_token = bearer[1].clone();
+        let raw_token = &bearer[1];
         let token = match verify_access_token(raw_token, &get::<String>("JWT_SECRET_KEY")) {
             Ok(tv) => tv,
-            Err(_) => return err(Errors::AccessForbidden)
+            Err(_) => return err(Errors::AccessForbidden),
         };
 
         let conn_pool = match req.app_data::<Data<Pool>>() {
             Some(c) => c,
-            None => return err(Errors::InternalServerError)
+            None => return err(Errors::InternalServerError),
         };
 
         let user = match get_user(conn_pool.as_ref(), token.user_id.parse().unwrap()) {
             Ok(u) => u,
-            Err(_) => return err(Errors::AccessForbidden)
+            Err(_) => return err(Errors::AccessForbidden),
         };
 
-        ok(RequireAuth {
-            user
-        })
+        ok(RequireAuth { user })
     }
 }

@@ -41,7 +41,7 @@ pub fn get_user(conn_pool: &Pool, user_id: Uuid) -> Result<User, Errors> {
     users
         .filter(id.eq(user_id))
         .get_result(&conn)
-        .map_err(|e| map_err(e))
+        .map_err(map_err)
 }
 
 pub fn get_user_by_email(conn_pool: &Pool, user_email: &str) -> Result<User, Errors> {
@@ -50,7 +50,7 @@ pub fn get_user_by_email(conn_pool: &Pool, user_email: &str) -> Result<User, Err
     users
         .filter(email.eq(user_email))
         .get_result(&conn)
-        .map_err(|e| map_err(e))
+        .map_err(map_err)
 }
 
 pub fn get_user_by_username(conn_pool: &Pool, user_username: &str) -> Result<User, Errors> {
@@ -59,7 +59,7 @@ pub fn get_user_by_username(conn_pool: &Pool, user_username: &str) -> Result<Use
     users
         .filter(username.eq(user_username))
         .get_result(&conn)
-        .map_err(|e| map_err(e))
+        .map_err(map_err)
 }
 
 pub fn get_users_from_query(conn_pool: &Pool, query: &str) -> Result<Vec<SafeUser>, Errors> {
@@ -75,9 +75,9 @@ pub fn get_users_from_query(conn_pool: &Pool, query: &str) -> Result<Vec<SafeUse
                 .or(nickname.like(&pattern)),
         )
         .get_results(&conn)
-        .map_err(|e| map_err(e))?;
+        .map_err(map_err)?;
 
-    Ok(queried_users.iter().map(|u| SafeUser::from(u)).collect())
+    Ok(queried_users.iter().map(SafeUser::from).collect())
 }
 
 pub fn is_unique_user(

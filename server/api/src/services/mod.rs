@@ -18,5 +18,5 @@
 
 mod auth;
 mod health;
-mod user;
 pub mod init;
+mod user;

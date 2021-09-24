@@ -67,6 +67,6 @@ pub async fn login_handler(
             refresh_token,
         }))
     } else {
-        return Err(Errors::BadRequest(String::from("Invalid creds")));
+        Err(Errors::BadRequest(String::from("Invalid creds")))
     }
 }
