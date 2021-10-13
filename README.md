@@ -7,6 +7,8 @@
   <img alt="Server API Tests Status Badge" src="https://github.com/CodeMountainOJ/CodeMountain/actions/workflows/server_api_test.yml/badge.svg" />
 </p>
 
+I've lost my interest in web stuff. And I can not continue this project anymore. So it's archived.
+
 ## Why?
 
 We are creating this online judge to learn more about technologies. Also to provide a better experience to the user for free and provide the ability to customize to the end user. This online judge will be created with performance and reliability on mind.
